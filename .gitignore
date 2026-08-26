@@ -1,0 +1,14 @@
+# Entornos virtuales de Python
+backend/.venv/
+**/__pycache__/
+*.pyc
+
+# Datos y modelos generados en tiempo de ejecución (no son código fuente)
+backend/data/
+
+# Caché de pytest
+backend/.pytest_cache/
+
+# Editores / SO
+.DS_Store
+Thumbs.db

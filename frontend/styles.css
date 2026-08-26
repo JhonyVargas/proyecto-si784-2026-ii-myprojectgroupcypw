@@ -1,0 +1,264 @@
+:root {
+  --azul: #1e3a5f;
+  --azul-claro: #2f5d8a;
+  --acento: #0f9d8c;
+  --fondo: #f4f6f8;
+  --tarjeta: #ffffff;
+  --borde: #dbe2e8;
+  --texto: #1f2933;
+  --texto-suave: #5b6b79;
+  --ok: #1a7f4b;
+  --error: #b3261e;
+  --pendiente: #8a6d00;
+  --radio: 10px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  background: var(--fondo);
+  color: var(--texto);
+}
+
+.cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  background: var(--azul);
+  color: #fff;
+  padding: 1rem 1.5rem;
+}
+
+.cabecera__marca {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.cabecera__logo {
+  background: var(--acento);
+  color: #fff;
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 0.5rem 0.7rem;
+}
+
+.cabecera h1 {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.cabecera p {
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+  color: #cfe0ef;
+}
+
+.cabecera__api {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.cabecera__api input {
+  padding: 0.35rem 0.5rem;
+  border-radius: 6px;
+  border: none;
+  width: 220px;
+}
+
+.badge {
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge--pendiente { background: #fff3cd; color: var(--pendiente); }
+.badge--ok { background: #d6f5e3; color: var(--ok); }
+.badge--error { background: #fbe1df; color: var(--error); }
+
+.aviso {
+  background: #fff3cd;
+  color: #6b5300;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.85rem;
+  border-bottom: 1px solid #f0e0a0;
+}
+
+.contenedor {
+  max-width: 900px;
+  margin: 1.5rem auto;
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.tarjeta {
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 1px 2px rgba(16, 30, 45, 0.06);
+}
+
+.tarjeta h2 {
+  margin-top: 0;
+  color: var(--azul);
+  font-size: 1.05rem;
+}
+
+.ayuda {
+  color: var(--texto-suave);
+  font-size: 0.85rem;
+  margin-top: -0.4rem;
+}
+
+.formulario {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0.75rem 0;
+}
+
+.formulario--linea {
+  grid-template-columns: 1fr auto;
+  align-items: center;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.campo label {
+  font-size: 0.8rem;
+  color: var(--texto-suave);
+}
+
+input[type="text"],
+input:not([type]),
+input[type="file"],
+select {
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background: #fff;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+
+button {
+  background: var(--acento);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.55rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+button:hover {
+  filter: brightness(1.05);
+}
+
+.boton-secundario {
+  background: var(--azul-claro);
+}
+
+hr {
+  border: none;
+  border-top: 1px dashed var(--borde);
+  margin: 1rem 0;
+}
+
+.resultado {
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+  background: #f8fafc;
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  padding: 0.6rem 0.75rem;
+  min-height: 1.2rem;
+}
+
+.resultado:empty {
+  display: none;
+}
+
+.resultado--ok {
+  border-color: #b7e4c7;
+  background: #eefbf3;
+}
+
+.resultado--error {
+  border-color: #f2b8b5;
+  background: #fdecea;
+}
+
+.qr {
+  width: 160px;
+  height: 160px;
+  margin-top: 0.5rem;
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+}
+
+.paso {
+  border-top: 1px solid var(--borde);
+  padding-top: 0.75rem;
+  margin-top: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.paso h3 {
+  width: 100%;
+  margin: 0 0 0.25rem;
+  font-size: 0.9rem;
+  color: var(--azul);
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.75rem;
+  font-size: 0.78rem;
+}
+
+.tabla th,
+.tabla td {
+  border: 1px solid var(--borde);
+  padding: 0.4rem 0.5rem;
+  text-align: left;
+  word-break: break-all;
+}
+
+.tabla th {
+  background: #eef2f6;
+}
+
+.pie {
+  text-align: center;
+  color: var(--texto-suave);
+  font-size: 0.8rem;
+  padding: 1.5rem 1rem 2.5rem;
+}

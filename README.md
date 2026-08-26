@@ -257,3 +257,27 @@ Google. (2026). MediaPipe Face Landmarker. Google AI for Developers.
 Superintendencia Nacional de los Registros Públicos. (2023). Resolución de la Superintendencia Nacional de los Registros Públicos N.° 169-2023-SUNARP/SN. Gobierno del Perú.
 Superintendencia Nacional de los Registros Públicos. (2026a). Resolución Jefatural N.° 055-2026-SUNARP/ZRXII/JEF. Gobierno del Perú.
 Superintendencia Nacional de los Registros Públicos. (2026b). Resoluciones relacionadas con cancelación de asientos registrales por falsificación documental. Gobierno del Perú.
+
+
+# Cómo ejecutar el proyecto
+
+El código fuente está organizado en dos carpetas:
+
+- `backend/` — API REST en FastAPI (Simulador de Identidad, credenciales QR, reconocimiento facial, prueba de vida, motor de reglas, integridad SHA-256, bitácora de auditoría y Simulador SID-Sunarp). Ver [`backend/README.md`](backend/README.md).
+- `frontend/` — panel de pruebas en HTML/CSS/JS plano que consume la API. Ver [`frontend/README.md`](frontend/README.md).
+
+Resumen rápido:
+
+```bash
+# 1. Backend
+cd backend
+python -m venv .venv && .venv\Scripts\activate  # Windows
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+
+# 2. Frontend (en otra terminal)
+cd frontend
+python -m http.server 5500
+```
+
+La documentación de diseño del sistema (factibilidad, visión y especificación de requerimientos con diagramas UML) se encuentra en la rama `documentos` de este repositorio (`FD01-Informe-Factibilidad.md`, `FD02-Informe-Vision.md`, `FD03-Informe-SRS.md`).
