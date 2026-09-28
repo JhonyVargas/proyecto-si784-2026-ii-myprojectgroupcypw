@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from datetime import datetime
+
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -28,6 +30,19 @@ def iniciar_verificacion(
 ):
     # El responsable procede exclusivamente de la sesión autenticada.
     return VerificacionService(db).iniciar_sesion(datos.codigo_credencial, usuario.id)
+
+
+@router.get("", response_model=list[schemas.SesionHistorialRespuesta])
+def listar_verificaciones(
+    resultado: str | None = None,
+    fecha_desde: datetime | None = Query(default=None),
+    fecha_hasta: datetime | None = Query(default=None),
+    id_identidad: str | None = None,
+    usuario: Usuario = Depends(require_roles(RolUsuario.ADMINISTRADOR)),
+    db: Session = Depends(get_db),
+):
+    """Historial filtrable para Administrador, sin exponer muestras biométricas."""
+    return VerificacionService(db).listar_sesiones(resultado, fecha_desde, fecha_hasta, id_identidad)
 
 
 @router.post("/{id_sesion}/rostro", response_model=schemas.SesionRespuesta)
