@@ -16,3 +16,8 @@ hash SHA-256 del token opaco, vencimiento y revocación, nunca el token ni la
 contraseña en texto plano. Es compatible con las bases SQLite existentes porque
 no modifica tablas previas; `create_all` crea solo esa tabla. El reinicio de la
 base local es exclusivamente una opción para datos sintéticos de desarrollo.
+
+Las sesiones de verificación persisten `id_responsable`, credencial, identidad,
+factores, resultado, estado e inicio/fin. La vigencia de diez minutos se
+materializa al consultar u operar; no requiere un worker y no altera el esquema
+SQLite existente.

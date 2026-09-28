@@ -87,6 +87,9 @@ class SesionRespuesta(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: str
+    id_identidad: Optional[str] = None
+    id_credencial: Optional[str] = None
+    id_responsable: Optional[str] = None
     estado: str
     resultado: Optional[str] = None
     rostro_coincide: Optional[bool] = None
@@ -94,6 +97,10 @@ class SesionRespuesta(BaseModel):
     prueba_vida_superada: Optional[bool] = None
     fecha_inicio: datetime
     fecha_fin: Optional[datetime] = None
+
+
+class SesionHistorialRespuesta(SesionRespuesta):
+    """Historial administrativo sin imágenes ni referencias biométricas."""
 
 
 class EventoAuditoriaRespuesta(BaseModel):

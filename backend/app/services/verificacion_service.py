@@ -8,7 +8,7 @@ en el README/FD01/FD02/FD03 del proyecto.
 
 from __future__ import annotations
 
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from sqlalchemy.orm import Session
 
@@ -92,6 +92,43 @@ class VerificacionService:
             self.auditoria.registrar_evento(sesion.id, "SESION_EXPIRADA", {})
             raise SesionNoVigenteError(f"La sesión '{id_sesion}' expiró por inactividad (RN-10).")
         return sesion
+
+    def expirar_sesiones_vencidas(self) -> int:
+        """Materializa la expiración al operar/consultar, sin tarea en segundo plano."""
+        limite = _now() - VIGENCIA_SESION
+        vencidas = (
+            self.db.query(SesionVerificacion)
+            .filter(SesionVerificacion.estado == EstadoSesion.EN_CURSO)
+            .filter(SesionVerificacion.fecha_inicio < limite)
+            .all()
+        )
+        for sesion in vencidas:
+            sesion.estado = EstadoSesion.EXPIRADA
+            sesion.fecha_fin = _now()
+        if vencidas:
+            self.db.commit()
+            for sesion in vencidas:
+                self.auditoria.registrar_evento(sesion.id, "SESION_EXPIRADA", {"origen": "consulta"})
+        return len(vencidas)
+
+    def listar_sesiones(
+        self,
+        resultado: str | None = None,
+        fecha_desde: datetime | None = None,
+        fecha_hasta: datetime | None = None,
+        id_identidad: str | None = None,
+    ) -> list[SesionVerificacion]:
+        self.expirar_sesiones_vencidas()
+        query = self.db.query(SesionVerificacion)
+        if resultado:
+            query = query.filter(SesionVerificacion.resultado == resultado)
+        if fecha_desde:
+            query = query.filter(SesionVerificacion.fecha_inicio >= fecha_desde)
+        if fecha_hasta:
+            query = query.filter(SesionVerificacion.fecha_inicio <= fecha_hasta)
+        if id_identidad:
+            query = query.filter(SesionVerificacion.id_identidad == id_identidad)
+        return query.order_by(SesionVerificacion.fecha_inicio.desc()).all()
 
     # ------------------------------------------------------------------
     # CU-03, paso 3-4: captura y comparación facial

@@ -26,6 +26,14 @@ Los errores de dominio usan `detail.code` estable y un mensaje seguro:
 `SESSION_NOT_FOUND` (404), `SESSION_NOT_ACTIVE` (409), `FACE_NOT_DETECTED`
 (422), `PROCEDURE_NOT_ENABLED` (409) y `DOCUMENT_NOT_FOUND` (404).
 
+## Historial de sesiones
+
+`GET /verificaciones` requiere `ADMINISTRADOR` y admite `resultado`,
+`fecha_desde`, `fecha_hasta` e `id_identidad`. Devuelve responsable, factores,
+decisión y fechas, sin imágenes ni rutas de biometría. Al consultar, cualquier
+sesión `EN_CURSO` con más de diez minutos se materializa como `EXPIRADA` y no
+acepta nuevos factores.
+
 - /identidades y /identidades/consentimientos: datos ficticios y consentimiento.
 - /credenciales: emisión, consulta, QR y revocación.
 - /verificaciones: creación de sesión, rostro y prueba de vida.
