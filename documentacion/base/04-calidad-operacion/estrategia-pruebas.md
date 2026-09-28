@@ -32,3 +32,12 @@ rostro no coincidente, liveness fallido, permiso de cámara denegado y API no
 disponible. Cada caso debe mostrar un mensaje recuperable, sin exponer datos
 sensibles ni administración al Operador. La expiración de sesión y el bloqueo
 temporal deben mostrar su causa y permitir reiniciar el flujo.
+
+## Evidencia automatizada M1
+
+`backend/tests/test_mvp_scenarios.py` ejecuta sin cámara, imágenes externas ni
+modelos descargados los cuatro escenarios críticos: credencial válida con rostro
+y vida aprobados; rostro no coincidente; prueba de vida fallida; y credencial
+inexistente. Simula explícitamente los adaptadores biométricos para medir el
+flujo, reglas, resultado y persistencia; no sustituye la demostración manual ni
+la evaluación experimental posterior.

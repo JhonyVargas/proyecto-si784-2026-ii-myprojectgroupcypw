@@ -21,7 +21,7 @@ Los números de issue son reales y se consultan en `https://github.com/UPT-FAING
 | RF-12 detectar alteración | #17 | `test_auditoria_hashchain` | Parcial |
 | RF-13 trámite SID simulado | #16, #19, #20 | `sid_sunarp_service` | Parcial |
 | RF-14 escenarios de servicio externo | #19, #20 | rutas de trámites, pruebas planificadas | Parcial |
-| RF-15 autenticación | #4, #5 | modelo Usuario existente; pruebas planificadas | No iniciada |
+| RF-15 autenticación | #4, #5 | `test_auth`, `test_authorization` | Verificado M1 |
 | RF-16 configurar reglas | #13 | reglas/administración planificada | No iniciada |
 | RF-17 consultar bitácora | #5, #17 | rutas de auditoría, permisos planificados | Parcial |
 | RF-18 filtrar sesiones | #7 | historial y filtros planificados | No iniciada |
@@ -31,12 +31,12 @@ Los números de issue son reales y se consultan en `https://github.com/UPT-FAING
 
 | Requisito | Issue(s) | Evidencia esperada | Estado base |
 | --- | --- | --- | --- |
-| RNF-01 cuatro pasos/usabilidad | #9, #10 | recorrido UI y tasa de éxito documentada | Parcial |
+| RNF-01 cuatro pasos/usabilidad | #9, #10 | recorrido UI y `test_mvp_scenarios` | Verificado M1 |
 | RNF-02 comparación < 3 s | #18, #24 | 20 comparaciones medidas | Pendiente |
 | RNF-03 disponibilidad 95 % | #23, #25 | healthcheck y reporte de uptime | Pendiente |
 | RNF-04 flujo < 45 s | #10, #14, #24 | 20 sesiones medidas | Pendiente |
 | RNF-05 FPR combinado < 5 % | #18, #26, #27 | protocolo y métricas agregadas | Pendiente |
-| RNF-06 autenticación y acceso | #4, #5, #22 | pruebas 401/403 | No iniciada |
+| RNF-06 autenticación y acceso | #4, #5, #22 | `test_auth`, `test_authorization` | Verificado M1; endurecimiento en #22 |
 | RNF-07 HTTPS/TLS | #22 | configuración de staging y guía | Pendiente |
 | RNF-08 navegadores vigentes | #9, #25 | matriz Chrome/Edge/Firefox | Pendiente |
 | RNF-09 mantenibilidad | #6, #21, #23 | capas, documentación y CI | Parcial |
@@ -50,7 +50,7 @@ Los números de issue son reales y se consultan en `https://github.com/UPT-FAING
 | RN-02 identidad ficticia | #10, #22, #26 | validación y protocolo sin datos reales | Parcial |
 | RN-03 consentimiento previo | #12, #26 | rechazo sin consentimiento y evidencia | Parcial |
 | RN-04 credencial revocada | #6, #10 | prueba de rechazo por revocación | Implementado, por verificar E2E |
-| RN-05 intentos fallidos | #8, #10 | alerta, bloqueo temporal y auditoría | Parcial |
+| RN-05 intentos fallidos | #8, #10 | `test_temporary_lockout`, auditoría | Verificado M1 |
 | RN-06 trámite condicionado | #16, #19, #20 | bloqueo de sesión rechazada | Parcial |
 | RN-07 bitácora inmutable | #17 | alteración detectada y acceso restringido | Parcial |
 | RN-08 integridad previa a trámite | #15, #16 | documento modificado bloquea trámite | Parcial |
