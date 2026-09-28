@@ -20,4 +20,4 @@
 
 - [x] 4.1 Validate all OpenSpec artifacts and the main planning specifications with strict validation; verify no schema or requirement-format error remains.
 - [x] 4.2 Audit live GitHub issue metadata, milestone assignment, dependencies, duplicates, labels, and phase coverage; verify the documented next technical issue is ready and has no dependency.
-- [ ] 4.3 Commit the documentation/OpenSpec planning change on the planning branch, push it, and create a pull request; verify branch, commit, and PR URL are available for review.
+- [x] 4.3 Commit the documentation/OpenSpec planning change on the planning branch, push it, and create a pull request; verify branch, commit, and PR URL are available for review.
