@@ -21,6 +21,14 @@ class IdentidadTemporalmenteBloqueadaError(NotaryVerifyError):
     """RN-05: bloqueo temporal trazable, no desactivación permanente."""
 
 
+class SolicitudCambioReferenciaNoEncontradaError(NotaryVerifyError):
+    pass
+
+
+class SolicitudCambioReferenciaNoPendienteError(NotaryVerifyError):
+    pass
+
+
 class CredencialNoRegistradaError(NotaryVerifyError):
     pass
 

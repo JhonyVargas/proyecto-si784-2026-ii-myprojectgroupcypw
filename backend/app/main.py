@@ -14,6 +14,7 @@ from app.api import (
     routes_credenciales,
     routes_documentos,
     routes_identidades,
+    routes_referencias,
     routes_tramites,
     routes_verificacion,
 )
@@ -21,6 +22,7 @@ from app.core.database import init_db
 from app.services.errors import (
     ConsentimientoRequeridoError, CredencialNoRegistradaError, DocumentoNoEncontradoError,
     IdentidadNoEncontradaError, IdentidadTemporalmenteBloqueadaError, NotaryVerifyError, RostroNoDetectadoError,
+    SolicitudCambioReferenciaNoEncontradaError, SolicitudCambioReferenciaNoPendienteError,
     SesionNoEncontradaError, SesionNoVigenteError, TramiteNoHabilitadoError,
 )
 
@@ -51,6 +53,7 @@ app.add_middleware(
 )
 
 app.include_router(routes_identidades.router)
+app.include_router(routes_referencias.router)
 app.include_router(routes_auth.router)
 app.include_router(routes_credenciales.router)
 app.include_router(routes_verificacion.router)
@@ -62,6 +65,8 @@ ERROR_CONTRACTS = {
     ConsentimientoRequeridoError: (409, "CONSENT_REQUIRED"),
     IdentidadNoEncontradaError: (404, "IDENTITY_NOT_FOUND"),
     IdentidadTemporalmenteBloqueadaError: (423, "IDENTITY_TEMPORARILY_LOCKED"),
+    SolicitudCambioReferenciaNoEncontradaError: (404, "REFERENCE_CHANGE_NOT_FOUND"),
+    SolicitudCambioReferenciaNoPendienteError: (409, "REFERENCE_CHANGE_ALREADY_DECIDED"),
     CredencialNoRegistradaError: (404, "CREDENTIAL_NOT_FOUND"),
     SesionNoEncontradaError: (404, "SESSION_NOT_FOUND"),
     SesionNoVigenteError: (409, "SESSION_NOT_ACTIVE"),

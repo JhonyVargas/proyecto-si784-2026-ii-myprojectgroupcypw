@@ -114,6 +114,25 @@ class AlertaIntentosRespuesta(BaseModel):
     fecha_resolucion: Optional[datetime] = None
 
 
+class SolicitudCambioReferenciaRespuesta(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    id_identidad: str
+    id_solicitante: str
+    motivo: str
+    estado: str
+    fecha_solicitud: datetime
+    fecha_decision: Optional[datetime] = None
+    id_decisor: Optional[str] = None
+    motivo_decision: Optional[str] = None
+
+
+class DecisionCambioReferencia(BaseModel):
+    aprobar: bool
+    motivo_decision: str = Field(min_length=3)
+
+
 class EventoAuditoriaRespuesta(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

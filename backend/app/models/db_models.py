@@ -136,6 +136,23 @@ class AlertaIntentosFallidos(Base):
     resuelta_por: Mapped[str | None] = mapped_column(ForeignKey("usuarios.id"), nullable=True)
 
 
+class SolicitudCambioReferencia(Base):
+    """Solicitud local pendiente; la imagen nunca se registra en auditoría."""
+
+    __tablename__ = "solicitudes_cambio_referencia"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    id_identidad: Mapped[str] = mapped_column(ForeignKey("identidades_simuladas.id"), index=True)
+    id_solicitante: Mapped[str] = mapped_column(ForeignKey("usuarios.id"))
+    motivo: Mapped[str] = mapped_column(Text)
+    referencia_pendiente_path: Mapped[str] = mapped_column(String(255))
+    estado: Mapped[str] = mapped_column(String(16), default="PENDIENTE")
+    fecha_solicitud: Mapped[datetime] = mapped_column(DateTime, default=_now)
+    fecha_decision: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    id_decisor: Mapped[str | None] = mapped_column(ForeignKey("usuarios.id"), nullable=True)
+    motivo_decision: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+
 class EventoAuditoria(Base):
     """Evento de la bitácora de auditoría con encadenamiento criptográfico (RN-07).
 

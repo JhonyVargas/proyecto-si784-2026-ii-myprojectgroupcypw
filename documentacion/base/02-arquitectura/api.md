@@ -41,6 +41,17 @@ forma automática. `POST /verificaciones/alertas/{id}/reactivar` permite una
 reactivación administrativa auditada, sin desactivar permanentemente la
 identidad.
 
+## Cambio de referencia biométrica
+
+`POST /identidades/{id}/referencia/solicitudes` permite a Operador o
+Administrador solicitar un cambio con motivo, imagen local y consentimiento
+vigente. Solo `ADMINISTRADOR` puede listar y decidir mediante
+`GET /identidades/referencia/solicitudes` y
+`POST /identidades/referencia/solicitudes/{id}/decision`. La aprobación
+sustituye atómicamente la referencia local y elimina la anterior; el rechazo
+elimina la pendiente. Auditoría conserva actor, motivo, fecha y resultado, pero
+nunca imagen, ruta ni contenido biométrico.
+
 - /identidades y /identidades/consentimientos: datos ficticios y consentimiento.
 - /credenciales: emisión, consulta, QR y revocación.
 - /verificaciones: creación de sesión, rostro y prueba de vida.

@@ -4,7 +4,7 @@ La base actual es SQLite local en backend/data/notaryverify.db y se crea con Bas
 
 | Grupo | Tablas / finalidad |
 | --- | --- |
-| Consentimiento e identidad | consentimientos_biometricos, identidades_simuladas |
+| Consentimiento e identidad | consentimientos_biometricos, identidades_simuladas, solicitudes_cambio_referencia |
 | Credenciales y usuario | credenciales, usuarios, sesiones_usuario |
 | Verificación | sesiones_verificacion |
 | Evidencia | eventos_auditoria, documentos_verificados, tramites_simulados |
@@ -26,3 +26,11 @@ SQLite existente.
 contador, inicio, vencimiento y resolución del bloqueo temporal RN-05. Es
 compatible con SQLite local existente; no modifica tablas preexistentes ni
 guarda biometría.
+
+`solicitudes_cambio_referencia` es una tabla aditiva para RN-09: conserva actor,
+motivo, fechas, decisión y una ruta runtime temporal. La referencia pendiente
+vive solo en `backend/data/referencias_pendientes`; al aprobarse se reemplaza
+atómicamente la referencia activa y se elimina la anterior, y al rechazarse se
+elimina la pendiente. La bitácora no incluye la ruta ni contenido de imágenes.
+Las bases SQLite existentes son compatibles porque no se modifica una tabla
+previa; el reinicio local sigue aplicando solo a datos sintéticos.

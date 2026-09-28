@@ -7,20 +7,26 @@ clientes de una notaría (RN-02): toda identidad registrada es ficticia.
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 from sqlalchemy.orm import Session
 
 from app.core.database import DATA_DIR
 from app.models import schemas
-from app.models.db_models import IdentidadSimulada
+from app.models.db_models import IdentidadSimulada, SolicitudCambioReferencia, _now
 from app.models.enums import EstadoIdentidad
 from app.services.auditoria_service import AuditoriaService
 from app.services.consentimiento_service import ConsentimientoService
-from app.services.errors import ConsentimientoRequeridoError, IdentidadNoEncontradaError
+from app.services.errors import (
+    ConsentimientoRequeridoError, IdentidadNoEncontradaError,
+    SolicitudCambioReferenciaNoEncontradaError, SolicitudCambioReferenciaNoPendienteError,
+)
 
 REFERENCIAS_DIR = DATA_DIR / "referencias_faciales"
 REFERENCIAS_DIR.mkdir(parents=True, exist_ok=True)
+REFERENCIAS_PENDIENTES_DIR = DATA_DIR / "referencias_pendientes"
+REFERENCIAS_PENDIENTES_DIR.mkdir(parents=True, exist_ok=True)
 
 
 class IdentidadService:
@@ -163,3 +169,52 @@ class IdentidadService:
     def referencia_facial_bytes(self, id_identidad: str) -> bytes:
         identidad = self.consultar(id_identidad)
         return Path(identidad.referencia_facial_path).read_bytes()
+
+    def solicitar_cambio_referencia(
+        self, id_identidad: str, id_solicitante: str, motivo: str, imagen_nueva: bytes
+    ) -> SolicitudCambioReferencia:
+        identidad = self.consultar(id_identidad)
+        if not self.consentimientos.existe_consentimiento_valido(identidad.id_participante):
+            raise ConsentimientoRequeridoError("Se requiere consentimiento biométrico vigente para solicitar el cambio.")
+        solicitud = SolicitudCambioReferencia(
+            id_identidad=id_identidad, id_solicitante=id_solicitante, motivo=motivo,
+            referencia_pendiente_path="",
+        )
+        self.db.add(solicitud)
+        self.db.flush()
+        path = REFERENCIAS_PENDIENTES_DIR / f"{solicitud.id}.jpg"
+        path.write_bytes(imagen_nueva)
+        solicitud.referencia_pendiente_path = str(path)
+        self.db.commit()
+        self.db.refresh(solicitud)
+        AuditoriaService(self.db).registrar_evento(None, "CAMBIO_REFERENCIA_SOLICITADO", {"id_solicitud": solicitud.id, "id_identidad": id_identidad, "id_solicitante": id_solicitante, "motivo": motivo})
+        return solicitud
+
+    def decidir_cambio_referencia(
+        self, id_solicitud: str, id_decisor: str, aprobar: bool, motivo_decision: str
+    ) -> SolicitudCambioReferencia:
+        solicitud = self.db.get(SolicitudCambioReferencia, id_solicitud)
+        if solicitud is None:
+            raise SolicitudCambioReferenciaNoEncontradaError(f"No existe la solicitud '{id_solicitud}'.")
+        if solicitud.estado != "PENDIENTE":
+            raise SolicitudCambioReferenciaNoPendienteError("La solicitud ya fue decidida.")
+        solicitud.estado = "APROBADA" if aprobar else "RECHAZADA"
+        solicitud.id_decisor = id_decisor
+        solicitud.fecha_decision = _now()
+        solicitud.motivo_decision = motivo_decision
+        pending_path = Path(solicitud.referencia_pendiente_path)
+        if aprobar:
+            identidad = self.consultar(solicitud.id_identidad)
+            active_path = REFERENCIAS_DIR / f"{identidad.id}.jpg"
+            # os.replace reemplaza/elimina la referencia anterior local de forma atómica.
+            os.replace(pending_path, active_path)
+            identidad.referencia_facial_path = str(active_path)
+        elif pending_path.exists():
+            pending_path.unlink()
+        self.db.commit()
+        self.db.refresh(solicitud)
+        AuditoriaService(self.db).registrar_evento(None, "CAMBIO_REFERENCIA_DECIDIDO", {"id_solicitud": solicitud.id, "id_identidad": solicitud.id_identidad, "id_decisor": id_decisor, "resultado": solicitud.estado, "motivo": motivo_decision})
+        return solicitud
+
+    def listar_solicitudes_cambio_referencia(self) -> list[SolicitudCambioReferencia]:
+        return self.db.query(SolicitudCambioReferencia).order_by(SolicitudCambioReferencia.fecha_solicitud.desc()).all()
