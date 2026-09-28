@@ -43,6 +43,25 @@ class CambioEstadoIdentidad(BaseModel):
     estado: str
 
 
+class LoginSolicitud(BaseModel):
+    correo: str
+    password: str = Field(min_length=1)
+
+
+class UsuarioAutenticadoRespuesta(BaseModel):
+    id: str
+    nombre: str
+    correo: str
+    rol: str
+
+
+class LoginRespuesta(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    expires_at: datetime
+    usuario: UsuarioAutenticadoRespuesta
+
+
 class CredencialCrear(BaseModel):
     id_identidad: str
     tipo: str = "QR"

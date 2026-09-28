@@ -28,5 +28,11 @@ def get_db():
 
 def init_db() -> None:
     from app.models import db_models  # noqa: F401 (registra las tablas en Base.metadata)
+    from app.services.auth_service import bootstrap_from_environment
 
     Base.metadata.create_all(bind=engine)
+    db = SessionLocal()
+    try:
+        bootstrap_from_environment(db)
+    finally:
+        db.close()

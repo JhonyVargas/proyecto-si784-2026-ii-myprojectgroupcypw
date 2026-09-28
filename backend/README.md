@@ -43,6 +43,21 @@ La base de datos SQLite (`backend/data/notaryverify.db`) y los archivos
 subidos (referencias faciales, documentos) se crean automáticamente al
 iniciar el servidor.
 
+## Autenticación local de desarrollo
+
+No existen cuentas predeterminadas. Para crear de forma explícita una cuenta
+de demostración, configure fuera del repositorio las parejas completas
+`NOTARYVERIFY_BOOTSTRAP_OPERATOR_EMAIL` / `_PASSWORD` y/o
+`NOTARYVERIFY_BOOTSTRAP_ADMIN_EMAIL` / `_PASSWORD` antes de iniciar la API.
+El endpoint `POST /auth/login` recibe `correo` y `password`, devuelve un token
+Bearer opaco de ocho horas y `POST /auth/logout` lo revoca. Las contraseñas se
+derivan con scrypt y SQLite conserva únicamente el hash del token.
+
+La tabla aditiva `sesiones_usuario` es compatible con la base local existente.
+Para reiniciar solo datos sintéticos de desarrollo, con el servidor apagado se
+puede eliminar `backend/data/notaryverify.db`; nunca se aplica este mecanismo a
+datos reales ni como sustituto de una migración formal.
+
 ## Ejecutar las pruebas
 
 ```bash
