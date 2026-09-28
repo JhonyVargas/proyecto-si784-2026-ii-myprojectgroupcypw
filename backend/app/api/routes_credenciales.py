@@ -6,11 +6,16 @@ from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
+from app.api.auth import require_roles
+from app.models.enums import RolUsuario
 from app.models import schemas
 from app.services.credencial_service import CredencialService
 from app.services.errors import CredencialNoRegistradaError
 
-router = APIRouter(prefix="/credenciales", tags=["Credenciales QR/RFID"])
+router = APIRouter(
+    prefix="/credenciales", tags=["Credenciales QR/RFID"],
+    dependencies=[Depends(require_roles(RolUsuario.ADMINISTRADOR))],
+)
 
 
 @router.post("", response_model=schemas.CredencialRespuesta, status_code=201)

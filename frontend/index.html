@@ -40,10 +40,20 @@
   </ol>
 
   <div class="barra__final">
+    <form id="form-login" class="acciones--par" aria-label="Inicio de sesión local">
+      <input id="login-correo" type="email" placeholder="correo de desarrollo" autocomplete="username" required />
+      <input id="login-password" type="password" placeholder="contraseña" autocomplete="current-password" required />
+      <button class="boton boton--sutil boton--compacto" type="submit">Ingresar</button>
+    </form>
+    <div id="sesion-activa" class="acciones--par" hidden>
+      <span id="sesion-usuario"></span>
+      <button class="boton boton--fantasma boton--compacto" id="boton-logout" type="button">Salir</button>
+    </div>
     <div class="modos" role="tablist">
       <button class="modo modo--activo" id="modo-verificar" role="tab">Verificación</button>
       <button class="modo" id="modo-administrar" role="tab">Administración</button>
     </div>
+    <p class="alerta" id="error-login" hidden></p>
     <div class="conexion" id="conexion">
       <span class="conexion__punto"></span>
       <span id="texto-api">conectando</span>

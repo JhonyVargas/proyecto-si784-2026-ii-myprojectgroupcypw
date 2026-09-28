@@ -6,6 +6,9 @@ from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
+from app.api.auth import CurrentUser, require_roles
+from app.models.db_models import Usuario
+from app.models.enums import RolUsuario
 from app.models import schemas
 from app.services.errors import (
     RostroNoDetectadoError,
@@ -18,13 +21,20 @@ router = APIRouter(prefix="/verificaciones", tags=["Verificación multicapa"])
 
 
 @router.post("", response_model=schemas.SesionRespuesta, status_code=201)
-def iniciar_verificacion(datos: schemas.SesionIniciar, db: Session = Depends(get_db)):
-    return VerificacionService(db).iniciar_sesion(datos.codigo_credencial, datos.id_responsable)
+def iniciar_verificacion(
+    datos: schemas.SesionIniciar,
+    usuario: Usuario = Depends(require_roles(RolUsuario.OPERADOR, RolUsuario.ADMINISTRADOR)),
+    db: Session = Depends(get_db),
+):
+    # El responsable procede exclusivamente de la sesión autenticada.
+    return VerificacionService(db).iniciar_sesion(datos.codigo_credencial, usuario.id)
 
 
 @router.post("/{id_sesion}/rostro", response_model=schemas.SesionRespuesta)
 def capturar_rostro(
-    id_sesion: str, imagen: UploadFile = File(...), db: Session = Depends(get_db)
+    id_sesion: str, imagen: UploadFile = File(...),
+    usuario: Usuario = Depends(require_roles(RolUsuario.OPERADOR, RolUsuario.ADMINISTRADOR)),
+    db: Session = Depends(get_db)
 ):
     try:
         imagen_bytes = imagen.file.read()
@@ -42,6 +52,7 @@ def ejecutar_prueba_vida(
     id_sesion: str,
     accion: str,
     imagen: UploadFile = File(...),
+    usuario: Usuario = Depends(require_roles(RolUsuario.OPERADOR, RolUsuario.ADMINISTRADOR)),
     db: Session = Depends(get_db),
 ):
     try:
