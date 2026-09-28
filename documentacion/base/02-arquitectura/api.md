@@ -13,6 +13,12 @@ La API FastAPI se publica localmente en http://127.0.0.1:8000; Swagger está en 
 - `POST /auth/logout` revoca el token y `GET /auth/me` permite comprobar la
   sesión sin revelar una contraseña.
 
+La matriz inicial de permisos asigna enrolamiento, edición, bloqueo,
+credenciales y bitácora a `ADMINISTRADOR`; `OPERADOR` y `ADMINISTRADOR` pueden
+iniciar y completar verificaciones. La API no confía en `id_responsable`
+enviado por el cliente: lo toma del token. Un rol insuficiente retorna `403`
+con `detail.code = AUTHORIZATION_REQUIRED`.
+
 - /identidades y /identidades/consentimientos: datos ficticios y consentimiento.
 - /credenciales: emisión, consulta, QR y revocación.
 - /verificaciones: creación de sesión, rostro y prueba de vida.

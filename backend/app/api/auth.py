@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Annotated
+from typing import Annotated, Callable
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -36,3 +36,15 @@ def get_current_user(
 
 
 CurrentUser = Annotated[Usuario, Depends(get_current_user)]
+
+
+def require_roles(*roles: str) -> Callable:
+    """Declara autorización explícita sin duplicar controles en cada ruta."""
+    def dependency(usuario: CurrentUser) -> Usuario:
+        if usuario.rol not in roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail={"code": "AUTHORIZATION_REQUIRED", "message": "Operación no autorizada para este rol."},
+            )
+        return usuario
+    return dependency

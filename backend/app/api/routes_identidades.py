@@ -6,12 +6,17 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
+from app.api.auth import require_roles
+from app.models.enums import RolUsuario
 from app.models import schemas
 from app.services.consentimiento_service import ConsentimientoService
 from app.services.errors import ConsentimientoRequeridoError, IdentidadNoEncontradaError
 from app.services.identidad_service import IdentidadService
 
-router = APIRouter(prefix="/identidades", tags=["Simulador de Identidad"])
+router = APIRouter(
+    prefix="/identidades", tags=["Simulador de Identidad"],
+    dependencies=[Depends(require_roles(RolUsuario.ADMINISTRADOR))],
+)
 
 
 @router.post("/consentimientos", status_code=201)

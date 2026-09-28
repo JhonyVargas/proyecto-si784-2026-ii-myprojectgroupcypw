@@ -11,6 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════ */
 
 const API = "http://127.0.0.1:8000";
+const auth = { token: sessionStorage.getItem("notaryverify_token"), usuario: null };
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -136,7 +137,9 @@ function formatearFecha(iso) {
 async function pedir(ruta, opciones = {}) {
   let respuesta;
   try {
-    respuesta = await fetch(API + ruta, opciones);
+    const headers = new Headers(opciones.headers || {});
+    if (auth.token) headers.set("Authorization", `Bearer ${auth.token}`);
+    respuesta = await fetch(API + ruta, { ...opciones, headers });
   } catch {
     throw new Error("No se pudo contactar con la API. Verifique que el backend esté en ejecución.");
   }
@@ -146,10 +149,49 @@ async function pedir(ruta, opciones = {}) {
   if (!respuesta.ok) {
     const detalle = cuerpo?.detail;
     if (typeof detalle === "string") throw new Error(detalle);
+    if (detalle?.message) throw new Error(detalle.message);
     if (Array.isArray(detalle)) throw new Error(detalle.map((d) => d.msg).join(" · "));
     throw new Error(`La API respondió con el código ${respuesta.status}.`);
   }
   return cuerpo;
+}
+
+function actualizarSesion(usuario) {
+  auth.usuario = usuario;
+  const autenticado = Boolean(usuario);
+  $("#form-login").hidden = autenticado;
+  $("#sesion-activa").hidden = !autenticado;
+  $("#sesion-usuario").textContent = usuario ? `${usuario.nombre} · ${usuario.rol}` : "";
+  $("#modo-administrar").hidden = !usuario || usuario.rol !== "ADMINISTRADOR";
+  if (!usuario || usuario.rol !== "ADMINISTRADOR") cambiarModo("verificar");
+}
+
+$("#form-login").addEventListener("submit", async (evento) => {
+  evento.preventDefault();
+  mostrarError("#error-login", "");
+  try {
+    const resultado = await pedir("/auth/login", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ correo: $("#login-correo").value, password: $("#login-password").value }),
+    });
+    auth.token = resultado.access_token;
+    sessionStorage.setItem("notaryverify_token", auth.token);
+    $("#login-password").value = "";
+    actualizarSesion(resultado.usuario);
+  } catch (error) { mostrarError("#error-login", error.message); }
+});
+
+$("#boton-logout").addEventListener("click", async () => {
+  try { await pedir("/auth/logout", { method: "POST" }); } catch { /* descartar token local */ }
+  auth.token = null;
+  sessionStorage.removeItem("notaryverify_token");
+  actualizarSesion(null);
+});
+
+async function restaurarSesion() {
+  if (!auth.token) return actualizarSesion(null);
+  try { actualizarSesion(await pedir("/auth/me")); }
+  catch { auth.token = null; sessionStorage.removeItem("notaryverify_token"); actualizarSesion(null); }
 }
 
 async function comprobarApi() {
@@ -1010,5 +1052,6 @@ $("#boton-listar-eventos").addEventListener("click", async () => {
 window.addEventListener("beforeunload", cerrarCamara);
 
 irA("pantalla-credencial", 1);
+restaurarSesion();
 comprobarApi();
 setInterval(comprobarApi, 15000);
