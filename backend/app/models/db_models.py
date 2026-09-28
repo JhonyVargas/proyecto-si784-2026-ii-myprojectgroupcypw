@@ -85,6 +85,19 @@ class Usuario(Base):
     password_hash: Mapped[str] = mapped_column(String(128))
 
 
+class SesionUsuario(Base):
+    """Sesión local revocable; el token en texto plano nunca se persiste."""
+
+    __tablename__ = "sesiones_usuario"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    id_usuario: Mapped[str] = mapped_column(ForeignKey("usuarios.id"), index=True)
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    fecha_creacion: Mapped[datetime] = mapped_column(DateTime, default=_now)
+    fecha_expiracion: Mapped[datetime] = mapped_column(DateTime)
+    fecha_revocacion: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+
+
 class SesionVerificacion(Base):
     __tablename__ = "sesiones_verificacion"
 

@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import (
     routes_auditoria,
+    routes_auth,
     routes_credenciales,
     routes_documentos,
     routes_identidades,
@@ -44,6 +45,7 @@ app.add_middleware(
 )
 
 app.include_router(routes_identidades.router)
+app.include_router(routes_auth.router)
 app.include_router(routes_credenciales.router)
 app.include_router(routes_verificacion.router)
 app.include_router(routes_documentos.router)
