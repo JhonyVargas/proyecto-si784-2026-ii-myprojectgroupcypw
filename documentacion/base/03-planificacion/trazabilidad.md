@@ -25,7 +25,7 @@ Los números de issue son reales y se consultan en `https://github.com/UPT-FAING
 | RF-16 configurar reglas | #13 | reglas/administración planificada | No iniciada |
 | RF-17 consultar bitácora | #5, #17 | rutas de auditoría, permisos planificados | Parcial |
 | RF-18 filtrar sesiones | #7 | historial y filtros planificados | No iniciada |
-| RF-19 consentimiento biométrico | #5, #12, #26 | `consentimiento_service`, pruebas de flujo | Parcial |
+| RF-19 consentimiento biométrico | #5, #12, #26 | `consentimiento_service`, `test_reference_change` | Cambio autorizado verificado; evaluación en #26 |
 
 ## Requerimientos no funcionales
 
@@ -48,13 +48,13 @@ Los números de issue son reales y se consultan en `https://github.com/UPT-FAING
 | --- | --- | --- | --- |
 | RN-01 ningún factor aprueba solo | #10, #13 | casos de reglas y configuración válida | Parcial |
 | RN-02 identidad ficticia | #10, #22, #26 | validación y protocolo sin datos reales | Parcial |
-| RN-03 consentimiento previo | #12, #26 | rechazo sin consentimiento y evidencia | Parcial |
+| RN-03 consentimiento previo | #12, #26 | `test_reference_change`, auditoría | Cambio autorizado verificado; evaluación en #26 |
 | RN-04 credencial revocada | #6, #10 | prueba de rechazo por revocación | Implementado, por verificar E2E |
 | RN-05 intentos fallidos | #8, #10 | `test_temporary_lockout`, auditoría | Verificado M1 |
 | RN-06 trámite condicionado | #16, #19, #20 | bloqueo de sesión rechazada | Parcial |
 | RN-07 bitácora inmutable | #17 | alteración detectada y acceso restringido | Parcial |
 | RN-08 integridad previa a trámite | #15, #16 | documento modificado bloquea trámite | Parcial |
-| RN-09 cambio biométrico autorizado | #5, #12 | permiso y evento de aprobación | No iniciada |
+| RN-09 cambio biométrico autorizado | #5, #12 | `test_reference_change`, evento de auditoría | Verificado M2 |
 | RN-10 vigencia de sesión | #7 | expiración tras diez minutos | No iniciada |
 
 ## Cobertura y mantenimiento
