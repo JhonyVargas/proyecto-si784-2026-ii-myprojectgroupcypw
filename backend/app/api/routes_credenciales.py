@@ -28,6 +28,12 @@ def listar_credenciales(db: Session = Depends(get_db)):
     return CredencialService(db).listar()
 
 
+@router.get("/rfid/{uid}", response_model=schemas.CredencialRespuesta)
+def leer_rfid_simulado(uid: str, db: Session = Depends(get_db)):
+    """Lectura del adaptador RFID simulado; nunca aprueba una verificación."""
+    return CredencialService(db).leer_rfid(uid)
+
+
 @router.get("/{codigo}", response_model=schemas.CredencialRespuesta)
 def leer_credencial(codigo: str, db: Session = Depends(get_db)):
     return CredencialService(db).leer(codigo)

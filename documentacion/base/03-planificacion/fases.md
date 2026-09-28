@@ -36,6 +36,8 @@ documentación discrepan.
 
 ## Posterior al alcance actual
 
-La integración RFID física queda fuera de la ruta MVP hasta resolver hardware,
-protocolo y formato en #11. No se planifican servicios institucionales reales,
-identificación legal ni datos biométricos de terceros.
+La decisión de #11 difiere la integración RFID física: no hay hardware en esta
+etapa y el proyecto usa un adaptador simulado con UID hexadecimal canónico. Un
+lector futuro deberá implementar el puerto definido sin cambiar reglas ni el
+contrato QR. No se planifican servicios institucionales reales, identificación
+legal ni datos biométricos de terceros.

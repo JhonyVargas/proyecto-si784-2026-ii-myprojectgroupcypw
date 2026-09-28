@@ -60,3 +60,12 @@ nunca imagen, ruta ni contenido biométrico.
 - /tramites: simulación condicionada a sesión aprobada.
 
 Los routers y OpenAPI son la fuente de detalle de payloads. Al cambiar un endpoint, actualizar esta guía, pruebas de API y documentación OpenAPI.
+
+## RFID simulado
+
+No hay lector RFID físico en esta etapa. Al emitir una credencial de tipo
+`RFID`, `uid_rfid` es obligatorio y debe ser hexadecimal en mayúsculas sin
+separadores, como `04A1B2C3`. `GET /credenciales/rfid/{uid}` usa el adaptador
+simulado y devuelve el mismo contrato de credencial que QR; una credencial
+revocada conserva su estado y una inexistente retorna `CREDENTIAL_NOT_FOUND`.
+La lectura solo recupera el registro: nunca aprueba una sesión por sí misma.
