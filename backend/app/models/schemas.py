@@ -103,6 +103,17 @@ class SesionHistorialRespuesta(SesionRespuesta):
     """Historial administrativo sin imágenes ni referencias biométricas."""
 
 
+class AlertaIntentosRespuesta(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    id_identidad: str
+    intentos_consecutivos: int
+    fecha_creacion: datetime
+    bloqueada_hasta: datetime
+    fecha_resolucion: Optional[datetime] = None
+
+
 class EventoAuditoriaRespuesta(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

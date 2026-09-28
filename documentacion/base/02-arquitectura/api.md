@@ -34,6 +34,13 @@ decisión y fechas, sin imágenes ni rutas de biometría. Al consultar, cualquie
 sesión `EN_CURSO` con más de diez minutos se materializa como `EXPIRADA` y no
 acepta nuevos factores.
 
+`GET /verificaciones/alertas` lista alertas de tres fallos consecutivos para
+Administrador. El bloqueo dura 15 minutos y devuelve `423` con
+`IDENTITY_TEMPORARILY_LOCKED` durante su vigencia; al vencer se resuelve de
+forma automática. `POST /verificaciones/alertas/{id}/reactivar` permite una
+reactivación administrativa auditada, sin desactivar permanentemente la
+identidad.
+
 - /identidades y /identidades/consentimientos: datos ficticios y consentimiento.
 - /credenciales: emisión, consulta, QR y revocación.
 - /verificaciones: creación de sesión, rostro y prueba de vida.

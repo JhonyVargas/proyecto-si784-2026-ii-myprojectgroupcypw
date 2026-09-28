@@ -20,7 +20,7 @@ from app.api import (
 from app.core.database import init_db
 from app.services.errors import (
     ConsentimientoRequeridoError, CredencialNoRegistradaError, DocumentoNoEncontradoError,
-    IdentidadNoEncontradaError, NotaryVerifyError, RostroNoDetectadoError,
+    IdentidadNoEncontradaError, IdentidadTemporalmenteBloqueadaError, NotaryVerifyError, RostroNoDetectadoError,
     SesionNoEncontradaError, SesionNoVigenteError, TramiteNoHabilitadoError,
 )
 
@@ -61,6 +61,7 @@ app.include_router(routes_tramites.router)
 ERROR_CONTRACTS = {
     ConsentimientoRequeridoError: (409, "CONSENT_REQUIRED"),
     IdentidadNoEncontradaError: (404, "IDENTITY_NOT_FOUND"),
+    IdentidadTemporalmenteBloqueadaError: (423, "IDENTITY_TEMPORARILY_LOCKED"),
     CredencialNoRegistradaError: (404, "CREDENTIAL_NOT_FOUND"),
     SesionNoEncontradaError: (404, "SESSION_NOT_FOUND"),
     SesionNoVigenteError: (409, "SESSION_NOT_ACTIVE"),

@@ -75,4 +75,7 @@ def test_tres_intentos_fallidos_consecutivos_bloquean_la_identidad_rn05(
         servicio.iniciar_sesion(credencial.codigo, id_responsable=None)
 
     identidad_actualizada = IdentidadService(db_session).consultar(identidad.id)
-    assert identidad_actualizada.estado == "BLOQUEADA"
+    assert identidad_actualizada.estado == "ACTIVA"
+    # RN-05 exige bloqueo temporal trazable, no desactivación permanente.
+    from app.models.db_models import AlertaIntentosFallidos
+    assert db_session.query(AlertaIntentosFallidos).filter_by(id_identidad=identidad.id).count() == 1

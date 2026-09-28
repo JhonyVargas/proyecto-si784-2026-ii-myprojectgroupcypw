@@ -45,6 +45,23 @@ def listar_verificaciones(
     return VerificacionService(db).listar_sesiones(resultado, fecha_desde, fecha_hasta, id_identidad)
 
 
+@router.get("/alertas", response_model=list[schemas.AlertaIntentosRespuesta])
+def listar_alertas(
+    usuario: Usuario = Depends(require_roles(RolUsuario.ADMINISTRADOR)),
+    db: Session = Depends(get_db),
+):
+    return VerificacionService(db).listar_alertas()
+
+
+@router.post("/alertas/{id_alerta}/reactivar", response_model=schemas.AlertaIntentosRespuesta)
+def reactivar_alerta(
+    id_alerta: str,
+    usuario: Usuario = Depends(require_roles(RolUsuario.ADMINISTRADOR)),
+    db: Session = Depends(get_db),
+):
+    return VerificacionService(db).resolver_alerta(id_alerta, usuario.id)
+
+
 @router.post("/{id_sesion}/rostro", response_model=schemas.SesionRespuesta)
 def capturar_rostro(
     id_sesion: str, imagen: UploadFile = File(...),
