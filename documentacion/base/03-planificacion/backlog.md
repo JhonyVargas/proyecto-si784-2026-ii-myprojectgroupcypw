@@ -8,13 +8,13 @@ feature esté lista para cerrar.
 
 | Issue | Brecha observada | Estado base |
 | --- | --- | --- |
-| [#4](https://github.com/UPT-FAING-EPIS/proyecto-si784-2026-ii-myprojectgroupcypw/issues/4) | Autenticación de operadores y administradores. | No iniciada |
-| [#5](https://github.com/UPT-FAING-EPIS/proyecto-si784-2026-ii-myprojectgroupcypw/issues/5) | Autorización API/UI por rol. | No iniciada |
-| [#6](https://github.com/UPT-FAING-EPIS/proyecto-si784-2026-ii-myprojectgroupcypw/issues/6) | Contrato y errores HTTP del flujo existente. | Parcial |
-| [#7](https://github.com/UPT-FAING-EPIS/proyecto-si784-2026-ii-myprojectgroupcypw/issues/7) | Vigencia, responsable, historial y filtros de sesión. | Parcial |
-| [#8](https://github.com/UPT-FAING-EPIS/proyecto-si784-2026-ii-myprojectgroupcypw/issues/8) | Alerta y bloqueo temporal tras fallos. | Parcial |
-| [#9](https://github.com/UPT-FAING-EPIS/proyecto-si784-2026-ii-myprojectgroupcypw/issues/9) | Estados de operador y errores de interfaz. | Parcial |
-| [#10](https://github.com/UPT-FAING-EPIS/proyecto-si784-2026-ii-myprojectgroupcypw/issues/10) | Evidencia automatizada de cuatro escenarios MVP. | Parcial |
+| [#4](https://github.com/UPT-FAING-EPIS/proyecto-si784-2026-ii-myprojectgroupcypw/issues/4) | Autenticación de operadores y administradores. | Cerrada y verificada |
+| [#5](https://github.com/UPT-FAING-EPIS/proyecto-si784-2026-ii-myprojectgroupcypw/issues/5) | Autorización API/UI por rol. | Cerrada y verificada |
+| [#6](https://github.com/UPT-FAING-EPIS/proyecto-si784-2026-ii-myprojectgroupcypw/issues/6) | Contrato y errores HTTP del flujo existente. | Cerrada y verificada |
+| [#7](https://github.com/UPT-FAING-EPIS/proyecto-si784-2026-ii-myprojectgroupcypw/issues/7) | Vigencia, responsable, historial y filtros de sesión. | Cerrada y verificada |
+| [#8](https://github.com/UPT-FAING-EPIS/proyecto-si784-2026-ii-myprojectgroupcypw/issues/8) | Alerta y bloqueo temporal tras fallos. | Cerrada y verificada |
+| [#9](https://github.com/UPT-FAING-EPIS/proyecto-si784-2026-ii-myprojectgroupcypw/issues/9) | Estados de operador y errores de interfaz. | Cerrada y verificada |
+| [#10](https://github.com/UPT-FAING-EPIS/proyecto-si784-2026-ii-myprojectgroupcypw/issues/10) | Evidencia automatizada de cuatro escenarios MVP. | Cerrada y verificada |
 
 ## V1 y endurecimiento académico
 
@@ -41,10 +41,9 @@ feature esté lista para cerrar.
 [#28](https://github.com/UPT-FAING-EPIS/proyecto-si784-2026-ii-myprojectgroupcypw/issues/28) trazabilidad; y
 [#29](https://github.com/UPT-FAING-EPIS/proyecto-si784-2026-ii-myprojectgroupcypw/issues/29) entrega final.
 
-## Primer trabajo elegible
+## Estado M1
 
-La siguiente issue técnica es [#4 — Autenticar operadores y administradores con
-sesiones seguras](https://github.com/UPT-FAING-EPIS/proyecto-si784-2026-ii-myprojectgroupcypw/issues/4).
-Es crítica, no tiene dependencias y desbloquea permisos, historial responsable y
-protección de datos sensibles. La #6, #14, #18, #21 y #23 son paralelizables,
-pero no sustituyen esa ruta crítica.
+Las issues #4 a #10 están cerradas y su evidencia está versionada. La ruta
+crítica MVP fue #4 → #5 → #7 → #8 → #9 → #10; #6 fue un cimiento paralelo
+cerrado antes de #7. El siguiente trabajo elegible pertenece a M2 y no forma
+parte del cierre de este milestone.
