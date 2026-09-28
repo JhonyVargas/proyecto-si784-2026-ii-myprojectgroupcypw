@@ -65,6 +65,11 @@ class LoginRespuesta(BaseModel):
 class CredencialCrear(BaseModel):
     id_identidad: str
     tipo: str = "QR"
+    uid_rfid: str | None = Field(
+        default=None,
+        pattern=r"^[0-9A-F]+$",
+        description="UID RFID simulado: hexadecimal en mayúsculas y sin separadores.",
+    )
 
 
 class CredencialRespuesta(BaseModel):

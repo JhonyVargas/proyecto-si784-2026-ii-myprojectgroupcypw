@@ -47,3 +47,10 @@ Las issues #4 a #10 están cerradas y su evidencia está versionada. La ruta
 crítica MVP fue #4 → #5 → #7 → #8 → #9 → #10; #6 fue un cimiento paralelo
 cerrado antes de #7. El siguiente trabajo elegible pertenece a M2 y no forma
 parte del cierre de este milestone.
+
+## Estado M2
+
+Las issues #11 y #12 están implementadas con evidencia versionada. La decisión
+de #11 es explícita: no hay hardware RFID en esta etapa; el adaptador simulado
+usa UID hexadecimal en mayúsculas sin separadores y una integración física se
+difirió. El criterio de salida M2 queda cubierto sin alterar el QR del MVP.

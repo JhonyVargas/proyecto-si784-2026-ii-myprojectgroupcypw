@@ -9,7 +9,7 @@ Los números de issue son reales y se consultan en `https://github.com/UPT-FAING
 | --- | --- | --- | --- |
 | RF-01 identidad simulada | #4, #5, #10 | `identidad_service`, `test_credencial_flujo` | Parcial |
 | RF-02 consultar identidad | #6, #10 | rutas de identidades/credenciales, API smoke | Parcial |
-| RF-03 emitir credencial QR/RFID | #10, #11 | `credencial_service`, pruebas de flujo | QR parcial; RFID pendiente |
+| RF-03 emitir credencial QR/RFID | #10, #11 | `credencial_service`, `test_rfid_simulado` | QR y RFID simulado verificados |
 | RF-04 leer credencial | #6, #10, #11 | rutas de credenciales, reglas | Parcial |
 | RF-05 capturar y comparar rostro | #18, #24, #26 | `biometria_service`, pruebas biométricas | Parcial |
 | RF-06 prueba de vida | #14, #24, #27 | `liveness_service`, pruebas de liveness | Parcial |
@@ -61,7 +61,8 @@ Los números de issue son reales y se consultan en `https://github.com/UPT-FAING
 
 - Los RF y RNF prioritarios tienen al menos una issue o una combinación de
   implementación, verificación y evaluación trazable.
-- #11 es una decisión explícita, no una brecha silenciosa: RFID físico no
-  bloquea QR/MVP.
+- #11 documenta que RFID físico no está disponible: el UID simulado canónico es
+  hexadecimal, en mayúsculas y sin separadores. La integración física futura no
+  bloquea QR/MVP ni este adaptador.
 - #28 debe actualizar esta matriz al cerrar una issue y verificar enlaces,
   evidencia y diferencias entre GitHub y documentación.
