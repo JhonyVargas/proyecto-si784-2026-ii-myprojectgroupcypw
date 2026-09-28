@@ -19,6 +19,13 @@ iniciar y completar verificaciones. La API no confía en `id_responsable`
 enviado por el cliente: lo toma del token. Un rol insuficiente retorna `403`
 con `detail.code = AUTHORIZATION_REQUIRED`.
 
+## Contrato de errores
+
+Los errores de dominio usan `detail.code` estable y un mensaje seguro:
+`CONSENT_REQUIRED` (409), `IDENTITY_NOT_FOUND` y `CREDENTIAL_NOT_FOUND` (404),
+`SESSION_NOT_FOUND` (404), `SESSION_NOT_ACTIVE` (409), `FACE_NOT_DETECTED`
+(422), `PROCEDURE_NOT_ENABLED` (409) y `DOCUMENT_NOT_FOUND` (404).
+
 - /identidades y /identidades/consentimientos: datos ficticios y consentimiento.
 - /credenciales: emisión, consulta, QR y revocación.
 - /verificaciones: creación de sesión, rostro y prueba de vida.
