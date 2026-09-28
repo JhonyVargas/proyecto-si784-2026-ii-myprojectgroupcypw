@@ -1,0 +1,19 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "${NOTARYVERIFY_BACKEND_PORT:-8000}:8000"
+    volumes:
+      - notaryverify-data:/app/data
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "${NOTARYVERIFY_FRONTEND_PORT:-5500}:5500"
+    depends_on:
+      - backend
+
+volumes:
+  notaryverify-data:

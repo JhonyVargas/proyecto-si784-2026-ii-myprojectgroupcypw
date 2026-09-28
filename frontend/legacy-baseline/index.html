@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NotaryVerify — Panel de pruebas</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="cabecera">
+  <div class="cabecera__marca">
+    <span class="cabecera__logo">NV</span>
+    <div>
+      <h1>NotaryVerify</h1>
+      <p>Prototipo experimental de verificación multicapa de identidad para trámites notariales</p>
+    </div>
+  </div>
+  <div class="cabecera__api">
+    <label for="api-base">API</label>
+    <input id="api-base" type="text" value="http://127.0.0.1:8000" />
+    <span id="estado-api" class="badge badge--pendiente">sin comprobar</span>
+  </div>
+</header>
+
+<div class="aviso">
+  ⚠️ Sistema exclusivamente académico. No sustituye a Reniec, al SID-Sunarp ni a la firma
+  digital oficial. Usar únicamente identidades ficticias y fotografías de participantes que
+  hayan otorgado su consentimiento expreso.
+</div>
+
+<main class="contenedor">
+
+  <!-- 1. Consentimiento + Identidad -->
+  <section class="tarjeta" id="seccion-identidad">
+    <h2>1. Simulador de Identidad</h2>
+    <p class="ayuda">Registra el consentimiento del participante voluntario y crea una identidad ficticia (RF-01, RF-19, RN-02, RN-03).</p>
+
+    <form id="form-consentimiento" class="formulario">
+      <div class="campo">
+        <label>ID del participante voluntario</label>
+        <input name="id_participante" required placeholder="p.ej. voluntario-01" />
+      </div>
+      <button type="submit">Otorgar consentimiento</button>
+    </form>
+
+    <hr />
+
+    <form id="form-identidad" class="formulario" enctype="multipart/form-data">
+      <div class="campo">
+        <label>Nombre ficticio</label>
+        <input name="nombre_ficticio" required placeholder="PERSONA-001" />
+      </div>
+      <div class="campo">
+        <label>Documento ficticio</label>
+        <input name="documento_ficticio" required placeholder="X0000001" />
+      </div>
+      <div class="campo">
+        <label>ID del participante (mismo que el consentimiento)</label>
+        <input name="id_participante" required placeholder="voluntario-01" />
+      </div>
+      <div class="campo">
+        <label>Fotografía de referencia</label>
+        <input name="imagen_referencia" type="file" accept="image/*" required />
+      </div>
+      <label class="checkbox">
+        <input type="checkbox" name="confirmo_dato_ficticio" required />
+        Confirmo que los datos ingresados son ficticios (RN-02)
+      </label>
+      <button type="submit">Registrar identidad</button>
+    </form>
+
+    <div id="resultado-identidad" class="resultado"></div>
+  </section>
+
+  <!-- 2. Credencial -->
+  <section class="tarjeta" id="seccion-credencial">
+    <h2>2. Credencial de prueba (QR)</h2>
+    <p class="ayuda">Emite una credencial asociada a la identidad registrada (RF-03, RF-04, RN-04).</p>
+
+    <form id="form-credencial" class="formulario">
+      <div class="campo">
+        <label>ID de identidad</label>
+        <input name="id_identidad" id="input-id-identidad" required placeholder="Se autocompleta al registrar la identidad" />
+      </div>
+      <button type="submit">Emitir credencial QR</button>
+    </form>
+
+    <div id="resultado-credencial" class="resultado"></div>
+    <img id="imagen-qr" class="qr" alt="Código QR de la credencial" hidden />
+
+    <form id="form-revocar" class="formulario formulario--linea">
+      <input name="id_credencial" id="input-id-credencial" placeholder="ID de credencial a revocar" />
+      <button type="submit" class="boton-secundario">Revocar credencial (RN-04)</button>
+    </form>
+  </section>
+
+  <!-- 3. Verificación multicapa -->
+  <section class="tarjeta" id="seccion-verificacion">
+    <h2>3. Ejecutar verificación multicapa (CU-03)</h2>
+    <p class="ayuda">Lee la credencial, captura el rostro y ejecuta la prueba de vida aleatoria.</p>
+
+    <form id="form-iniciar-sesion" class="formulario formulario--linea">
+      <input name="codigo_credencial" id="input-codigo-credencial" required placeholder="Código de credencial (ej. NV-XXXXXX)" />
+      <button type="submit">Iniciar verificación</button>
+    </form>
+
+    <div id="panel-sesion" hidden>
+      <p>Sesión activa: <code id="texto-id-sesion"></code></p>
+
+      <div class="paso">
+        <h3>Paso A — Captura facial</h3>
+        <input id="input-rostro" type="file" accept="image/*" />
+        <button id="boton-rostro" type="button">Enviar rostro</button>
+      </div>
+
+      <div class="paso">
+        <h3>Paso B — Prueba de vida</h3>
+        <select id="select-accion">
+          <option value="PARPADEO">Parpadeo (ojos cerrados)</option>
+          <option value="GIRO_IZQUIERDA">Giro de rostro — izquierda</option>
+          <option value="GIRO_DERECHA">Giro de rostro — derecha</option>
+        </select>
+        <input id="input-prueba-vida" type="file" accept="image/*" />
+        <button id="boton-prueba-vida" type="button">Enviar prueba de vida</button>
+      </div>
+    </div>
+
+    <div id="resultado-verificacion" class="resultado"></div>
+
+    <form id="form-tramite" class="formulario formulario--linea">
+      <select id="select-escenario">
+        <option value="DISPONIBLE">Servicio disponible</option>
+        <option value="RECHAZADO">Trámite rechazado</option>
+        <option value="SERVICIO_NO_DISPONIBLE">Servicio no disponible</option>
+        <option value="TIEMPO_AGOTADO">Tiempo de espera agotado</option>
+      </select>
+      <button type="submit">Enviar a Simulador SID-Sunarp (RN-06)</button>
+    </form>
+    <div id="resultado-tramite" class="resultado"></div>
+  </section>
+
+  <!-- 4. Auditoría -->
+  <section class="tarjeta" id="seccion-auditoria">
+    <h2>4. Bitácora de auditoría</h2>
+    <p class="ayuda">Consulta los eventos registrados y verifica el encadenamiento criptográfico (RF-11, RF-12, RN-07).</p>
+
+    <div class="formulario formulario--linea">
+      <button id="boton-verificar-cadena" type="button">Verificar cadena completa</button>
+      <button id="boton-listar-eventos" type="button" class="boton-secundario">Listar todos los eventos</button>
+    </div>
+
+    <div id="resultado-cadena" class="resultado"></div>
+
+    <table id="tabla-eventos" class="tabla" hidden>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Sesión</th>
+          <th>Tipo de evento</th>
+          <th>Hash anterior</th>
+          <th>Hash actual</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+</main>
+
+<footer class="pie">
+  NotaryVerify — Proyecto académico del curso Calidad y Pruebas de Software, UPT.
+  Sin valor de identificación legal.
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

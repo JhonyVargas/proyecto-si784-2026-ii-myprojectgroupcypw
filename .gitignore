@@ -8,6 +8,14 @@ backend/data/
 
 # Caché de pytest
 backend/.pytest_cache/
+backend/.mypy_cache/
+backend/data/modelos/
+
+# Configuración local
+.env
+
+# Docker
+*.log
 
 # Editores / SO
 .DS_Store
