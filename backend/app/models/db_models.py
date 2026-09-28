@@ -124,6 +124,18 @@ class SesionVerificacion(Base):
     fecha_fin: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
 
+class AlertaIntentosFallidos(Base):
+    __tablename__ = "alertas_intentos_fallidos"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    id_identidad: Mapped[str] = mapped_column(ForeignKey("identidades_simuladas.id"), index=True)
+    intentos_consecutivos: Mapped[int] = mapped_column(Integer)
+    fecha_creacion: Mapped[datetime] = mapped_column(DateTime, default=_now)
+    bloqueada_hasta: Mapped[datetime] = mapped_column(DateTime)
+    fecha_resolucion: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    resuelta_por: Mapped[str | None] = mapped_column(ForeignKey("usuarios.id"), nullable=True)
+
+
 class EventoAuditoria(Base):
     """Evento de la bitácora de auditoría con encadenamiento criptográfico (RN-07).
 

@@ -17,6 +17,10 @@ class IdentidadNoEncontradaError(NotaryVerifyError):
     pass
 
 
+class IdentidadTemporalmenteBloqueadaError(NotaryVerifyError):
+    """RN-05: bloqueo temporal trazable, no desactivación permanente."""
+
+
 class CredencialNoRegistradaError(NotaryVerifyError):
     pass
 

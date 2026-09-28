@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 
 from sqlalchemy.orm import Session
 
-from app.models.db_models import SesionVerificacion, _now
+from app.models.db_models import AlertaIntentosFallidos, SesionVerificacion, _now
 from app.models.enums import EstadoCredencial, EstadoSesion
 from app.models.enums import ResultadoVerificacion as R
 from app.services.auditoria_service import AuditoriaService
@@ -20,6 +20,7 @@ from app.services.biometria_service import BiometriaService
 from app.services.credencial_service import CredencialService
 from app.services.errors import (
     CredencialNoRegistradaError,
+    IdentidadTemporalmenteBloqueadaError,
     SesionNoEncontradaError,
     SesionNoVigenteError,
 )
@@ -29,6 +30,7 @@ from app.services.reglas_service import ReglasService
 
 VIGENCIA_SESION = timedelta(minutes=10)
 INTENTOS_FALLIDOS_MAXIMOS = 3
+BLOQUEO_TEMPORAL = timedelta(minutes=15)
 
 
 class VerificacionService:
@@ -54,6 +56,7 @@ class VerificacionService:
             credencial = self.credenciales.leer(codigo_credencial)
             id_identidad = credencial.id_identidad
             id_credencial = credencial.id
+            self._comprobar_bloqueo_temporal(id_identidad)
         except CredencialNoRegistradaError:
             pass
 
@@ -77,6 +80,47 @@ class VerificacionService:
             self._finalizar_con_resultado(sesion, R.CREDENCIAL_REVOCADA)
 
         return sesion
+
+    def _comprobar_bloqueo_temporal(self, id_identidad: str) -> None:
+        alerta = (
+            self.db.query(AlertaIntentosFallidos)
+            .filter(AlertaIntentosFallidos.id_identidad == id_identidad)
+            .filter(AlertaIntentosFallidos.fecha_resolucion.is_(None))
+            .order_by(AlertaIntentosFallidos.fecha_creacion.desc())
+            .first()
+        )
+        if alerta is None:
+            return
+        if alerta.bloqueada_hasta <= _now():
+            alerta.fecha_resolucion = _now()
+            self.db.commit()
+            self.auditoria.registrar_evento(None, "BLOQUEO_TEMPORAL_VENCIDO", {"id_identidad": id_identidad})
+            return
+        raise IdentidadTemporalmenteBloqueadaError(
+            f"La identidad está bloqueada temporalmente hasta {alerta.bloqueada_hasta.isoformat()}."
+        )
+
+    def listar_alertas(self) -> list[AlertaIntentosFallidos]:
+        self._resolver_alertas_vencidas()
+        return self.db.query(AlertaIntentosFallidos).order_by(AlertaIntentosFallidos.fecha_creacion.desc()).all()
+
+    def resolver_alerta(self, id_alerta: str, id_administrador: str) -> AlertaIntentosFallidos:
+        alerta = self.db.get(AlertaIntentosFallidos, id_alerta)
+        if alerta is None:
+            raise SesionNoEncontradaError(f"No existe la alerta '{id_alerta}'.")
+        if alerta.fecha_resolucion is None:
+            alerta.fecha_resolucion = _now()
+            alerta.resuelta_por = id_administrador
+            self.db.commit()
+            self.auditoria.registrar_evento(None, "BLOQUEO_TEMPORAL_REACTIVADO", {"id_identidad": alerta.id_identidad, "id_alerta": alerta.id, "id_administrador": id_administrador})
+        return alerta
+
+    def _resolver_alertas_vencidas(self) -> None:
+        alertas = self.db.query(AlertaIntentosFallidos).filter(AlertaIntentosFallidos.fecha_resolucion.is_(None)).filter(AlertaIntentosFallidos.bloqueada_hasta <= _now()).all()
+        for alerta in alertas:
+            alerta.fecha_resolucion = _now()
+        if alertas:
+            self.db.commit()
 
     def _obtener_sesion_vigente(self, id_sesion: str) -> SesionVerificacion:
         sesion = self.db.get(SesionVerificacion, id_sesion)
@@ -207,12 +251,19 @@ class VerificacionService:
         if len(ultimas) < INTENTOS_FALLIDOS_MAXIMOS:
             return
         if all(s.resultado != R.IDENTIDAD_VERIFICADA for s in ultimas):
-            self.identidades.bloquear(id_identidad)
+            alerta = AlertaIntentosFallidos(
+                id_identidad=id_identidad,
+                intentos_consecutivos=INTENTOS_FALLIDOS_MAXIMOS,
+                bloqueada_hasta=_now() + BLOQUEO_TEMPORAL,
+            )
+            self.db.add(alerta)
+            self.db.commit()
             self.auditoria.registrar_evento(
                 None,
                 "ALERTA_INTENTOS_FALLIDOS",
                 {
                     "id_identidad": id_identidad,
                     "intentos_consecutivos": INTENTOS_FALLIDOS_MAXIMOS,
+                    "bloqueada_hasta": alerta.bloqueada_hasta,
                 },
             )

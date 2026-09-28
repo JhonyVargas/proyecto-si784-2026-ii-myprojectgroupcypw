@@ -21,3 +21,8 @@ Las sesiones de verificación persisten `id_responsable`, credencial, identidad,
 factores, resultado, estado e inicio/fin. La vigencia de diez minutos se
 materializa al consultar u operar; no requiere un worker y no altera el esquema
 SQLite existente.
+
+`alertas_intentos_fallidos` es una tabla aditiva que registra identidad,
+contador, inicio, vencimiento y resolución del bloqueo temporal RN-05. Es
+compatible con SQLite local existente; no modifica tablas preexistentes ni
+guarda biometría.
