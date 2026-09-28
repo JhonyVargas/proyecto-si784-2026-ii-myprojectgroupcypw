@@ -22,3 +22,13 @@ detectada, se registró una identidad ficticia, se emitió una credencial y el
 flujo terminó con Identidad verificada. La evidencia visual mostró credencial
 válida, reconocimiento facial con confianza 0.54 y prueba de vida mediante giro
 hacia la izquierda. No se registran datos personales en esta evidencia.
+
+## Recorrido manual MVP por navegador
+
+En Chrome, Edge y Firefox actuales, con una cuenta sintética Operador: iniciar
+sesión, ingresar una credencial válida, capturar rostro, completar la acción de
+vida y comprobar el resultado. Repetir verificando: credencial inexistente,
+rostro no coincidente, liveness fallido, permiso de cámara denegado y API no
+disponible. Cada caso debe mostrar un mensaje recuperable, sin exponer datos
+sensibles ni administración al Operador. La expiración de sesión y el bloqueo
+temporal deben mostrar su causa y permitir reiniciar el flujo.
