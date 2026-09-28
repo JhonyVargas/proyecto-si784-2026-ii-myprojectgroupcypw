@@ -12,6 +12,12 @@
 
 const API = "http://127.0.0.1:8000";
 const auth = { token: sessionStorage.getItem("notaryverify_token"), usuario: null };
+const MENSAJES_CODIGO = {
+  AUTHENTICATION_REQUIRED: "La sesión de operador no es válida. Inicie sesión nuevamente.",
+  AUTHORIZATION_REQUIRED: "Su rol no puede realizar esta operación.",
+  SESSION_NOT_ACTIVE: "La sesión de verificación venció o ya finalizó. Inicie una nueva.",
+  IDENTITY_TEMPORARILY_LOCKED: "La identidad tiene un bloqueo temporal por intentos fallidos. Espere o solicite reactivación administrativa.",
+};
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -149,7 +155,12 @@ async function pedir(ruta, opciones = {}) {
   if (!respuesta.ok) {
     const detalle = cuerpo?.detail;
     if (typeof detalle === "string") throw new Error(detalle);
-    if (detalle?.message) throw new Error(detalle.message);
+    if (detalle?.code === "AUTHENTICATION_REQUIRED") {
+      auth.token = null;
+      sessionStorage.removeItem("notaryverify_token");
+      actualizarSesion(null);
+    }
+    if (detalle?.code) throw new Error(MENSAJES_CODIGO[detalle.code] || detalle.message || "La operación fue rechazada.");
     if (Array.isArray(detalle)) throw new Error(detalle.map((d) => d.msg).join(" · "));
     throw new Error(`La API respondió con el código ${respuesta.status}.`);
   }
@@ -163,6 +174,8 @@ function actualizarSesion(usuario) {
   $("#sesion-activa").hidden = !autenticado;
   $("#sesion-usuario").textContent = usuario ? `${usuario.nombre} · ${usuario.rol}` : "";
   $("#modo-administrar").hidden = !usuario || usuario.rol !== "ADMINISTRADOR";
+  $("#boton-iniciar").disabled = !usuario;
+  $("#aviso-sesion").hidden = autenticado;
   if (!usuario || usuario.rol !== "ADMINISTRADOR") cambiarModo("verificar");
 }
 
