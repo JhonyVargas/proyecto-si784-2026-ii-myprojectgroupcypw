@@ -22,6 +22,12 @@ No agregar datos reales de clientes, credenciales institucionales, tokens, docum
 
 Usar una rama focalizada con prefijo feat/, fix/, docs/ o chore/. Usar Conventional Commits, por ejemplo feat: validar credencial o docs: actualizar pruebas. Ejecutar las pruebas pertinentes; si no pueden ejecutarse, registrar comando, motivo y riesgo en la documentación o cambio.
 
+Para trabajo planificado, iniciar desde una issue GitHub con `status:ready` y
+milestone asignado. Antes de abrir un PR, actualizar la issue con evidencia de
+criterios de aceptación, pruebas y cualquier cambio en dependencias; mantener la
+matriz `documentacion/base/03-planificacion/trazabilidad.md` sincronizada cuando
+afecte un RF, RNF o regla de negocio.
+
 Para cambios de modelo SQLAlchemy o persistencia, documentar compatibilidad, reinicio o migración, datos afectados y pruebas antes de editar. No cambiar el esquema solo mediante create_all sin una decisión explícita.
 
 Actualizar documentación, OpenSpec y pruebas cuando cambien requisitos, API, seguridad, operación o comportamiento. Ejecutar como mínimo python -m pytest -q desde backend, las comprobaciones API necesarias y openspec validate para cambios OpenSpec.
