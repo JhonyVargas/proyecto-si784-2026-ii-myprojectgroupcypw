@@ -1,6 +1,6 @@
 """Pruebas de la bitácora de auditoría con encadenamiento criptográfico (RN-07)."""
 
-from app.models.db_models import EventoAuditoria
+from app.models.db_models import EventoAuditoria, SesionVerificacion
 from app.services.auditoria_service import AuditoriaService, GENESIS_HASH
 
 
@@ -58,3 +58,30 @@ def test_listar_eventos_filtra_por_sesion(db_session):
 
     assert len(eventos_a) == 1
     assert eventos_a[0].id_sesion == "sesion-A"
+
+
+def test_reconstruye_sesion_con_payload_minimo_sin_credencial(db_session):
+    sesion = SesionVerificacion()
+    db_session.add(sesion)
+    db_session.commit()
+    servicio = AuditoriaService(db_session)
+    servicio.registrar_evento(
+        sesion.id,
+        "SESION_INICIADA",
+        {"codigo_credencial": "SECRETO-NO-EXPOSICION", "actor": "operador-1"},
+    )
+    servicio.registrar_evento(
+        sesion.id,
+        "SESION_FINALIZADA",
+        {"resultado": "IDENTIDAD_VERIFICADA", "actor": "operador-1"},
+    )
+
+    reconstruccion = servicio.reconstruir_sesion(sesion.id)
+
+    assert [evento.tipo_evento for evento in reconstruccion.eventos] == [
+        "SESION_INICIADA", "SESION_FINALIZADA"
+    ]
+    assert reconstruccion.eventos[0].actor == "operador-1"
+    assert reconstruccion.eventos[0].entidad == "SESION_VERIFICACION"
+    assert reconstruccion.eventos[0].payload_minimo == {}
+    assert reconstruccion.eventos[1].payload_minimo == {"resultado": "IDENTIDAD_VERIFICADA"}

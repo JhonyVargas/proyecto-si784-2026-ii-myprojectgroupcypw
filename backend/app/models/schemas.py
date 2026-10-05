@@ -189,6 +189,23 @@ class VerificacionCadenaRespuesta(BaseModel):
     primer_evento_alterado: Optional[str] = None
 
 
+class EventoReconstruidoRespuesta(BaseModel):
+    """Resumen autorizado y seguro de un evento crítico de sesión."""
+
+    tipo_evento: str
+    actor: str
+    entidad: str
+    id_entidad: str
+    payload_minimo: dict[str, str | bool | int | float | None]
+    timestamp: datetime
+    secuencia: int
+
+
+class ReconstruccionSesionRespuesta(BaseModel):
+    id_sesion: str
+    eventos: list[EventoReconstruidoRespuesta]
+
+
 class DocumentoRespuesta(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

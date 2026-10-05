@@ -14,9 +14,27 @@ import json
 from sqlalchemy.orm import Session
 
 from app.models import schemas
-from app.models.db_models import EventoAuditoria, _now
+from app.models.db_models import EventoAuditoria, SesionVerificacion, _now
+from app.services.errors import SesionNoEncontradaError
 
 GENESIS_HASH = "0" * 64
+
+# Catálogo de evidencia pública de operaciones críticas.  Los detalles crudos
+# se conservan únicamente para el cálculo de la cadena y no se devuelven por
+# este contrato; en particular, no se expone el código de credencial ni datos
+# biométricos de los eventos históricos.
+_PAYLOAD_PUBLICO = {
+    "SESION_INICIADA": (),
+    "ROSTRO_EVALUADO": ("coincide",),
+    "DESAFIO_PRUEBA_DE_VIDA_EMITIDO": ("reintentos", "experimental"),
+    "DESAFIO_PRUEBA_DE_VIDA_REEMPLAZADO": ("reintentos", "experimental"),
+    "PRUEBA_DE_VIDA_EVALUADA": ("superado", "experimental"),
+    "PRUEBA_DE_VIDA_VENCIDA": ("motivo", "experimental"),
+    "SESION_FINALIZADA": ("resultado",),
+    "SESION_EXPIRADA": ("origen",),
+    "EVIDENCIA_TRAMITE_ASOCIADA": ("id_documento", "id_tramite", "resultado_sesion"),
+    "TRAMITE_SIMULADO_EVALUADO": ("id_documento", "id_tramite", "escenario", "estado", "respuesta_minima"),
+}
 
 
 class AuditoriaService:
@@ -76,6 +94,49 @@ class AuditoriaService:
         if id_sesion:
             query = query.filter(EventoAuditoria.id_sesion == id_sesion)
         return query.all()
+
+    @staticmethod
+    def _resumen_evento(evento: EventoAuditoria) -> schemas.EventoReconstruidoRespuesta:
+        """Normaliza detalle histórico a un contrato mínimo de auditoría."""
+        try:
+            detalle = json.loads(evento.detalle)
+        except json.JSONDecodeError:
+            detalle = {}
+        campos = _PAYLOAD_PUBLICO.get(evento.tipo_evento, ())
+        payload = {campo: detalle.get(campo) for campo in campos if campo in detalle}
+        id_entidad = str(
+            detalle.get("id_tramite") or detalle.get("id_documento") or evento.id_sesion or "SISTEMA"
+        )
+        entidad = (
+            "TRAMITE_SIMULADO" if "id_tramite" in detalle
+            else "DOCUMENTO" if "id_documento" in detalle
+            else "SESION_VERIFICACION" if evento.id_sesion
+            else "SISTEMA"
+        )
+        actor = str(
+            detalle.get("actor")
+            or detalle.get("id_administrador")
+            or detalle.get("id_decisor")
+            or "SISTEMA"
+        )
+        return schemas.EventoReconstruidoRespuesta(
+            tipo_evento=evento.tipo_evento,
+            actor=actor,
+            entidad=entidad,
+            id_entidad=id_entidad,
+            payload_minimo=payload,
+            timestamp=evento.timestamp,
+            secuencia=evento.secuencia,
+        )
+
+    def reconstruir_sesion(self, id_sesion: str) -> schemas.ReconstruccionSesionRespuesta:
+        if self.db.get(SesionVerificacion, id_sesion) is None:
+            raise SesionNoEncontradaError(f"No existe la sesión '{id_sesion}'.")
+        eventos = self.listar_eventos(id_sesion)
+        return schemas.ReconstruccionSesionRespuesta(
+            id_sesion=id_sesion,
+            eventos=[self._resumen_evento(evento) for evento in eventos],
+        )
 
     def verificar_cadena(self) -> schemas.VerificacionCadenaRespuesta:
         eventos = self.listar_eventos()
