@@ -218,3 +218,15 @@ class TramiteRespuesta(BaseModel):
     id_sesion: str
     estado: str
     fecha: datetime
+
+
+class EvidenciaTramiteRespuesta(BaseModel):
+    """Reconstrucción mínima autorizada, sin contenido ni datos sensibles."""
+
+    id_tramite: str
+    id_sesion: str
+    id_documento: str
+    resultado_sesion: str | None
+    estado_tramite: str
+    integridad_documento: str
+    fecha_tramite: datetime

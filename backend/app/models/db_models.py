@@ -230,3 +230,25 @@ class TramiteSimulado(Base):
     id_sesion: Mapped[str] = mapped_column(String(32), index=True)
     estado: Mapped[str] = mapped_column(String(20), default=EstadoTramite.ENVIADO)
     fecha: Mapped[datetime] = mapped_column(DateTime, default=_now)
+
+
+class EvidenciaTramite(Base):
+    """Enlace recuperable entre los tres artefactos de un trámite académico.
+
+    La evidencia guarda solo claves internas; el documento y sus datos de
+    integridad continúan bajo control de ``DocumentoVerificado``.
+    """
+
+    __tablename__ = "evidencias_tramite"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    id_sesion: Mapped[str] = mapped_column(
+        ForeignKey("sesiones_verificacion.id"), index=True
+    )
+    id_documento: Mapped[str] = mapped_column(
+        ForeignKey("documentos_verificados.id"), index=True
+    )
+    id_tramite: Mapped[str] = mapped_column(
+        ForeignKey("tramites_simulados.id"), unique=True, index=True
+    )
+    fecha_creacion: Mapped[datetime] = mapped_column(DateTime, default=_now)

@@ -21,7 +21,8 @@ from app.api import (
 )
 from app.core.database import init_db
 from app.services.errors import (
-    ConsentimientoRequeridoError, CredencialNoRegistradaError, DocumentoNoEncontradoError,
+    ConsentimientoRequeridoError, CredencialNoRegistradaError, DocumentoIntegridadInvalidaError,
+    DocumentoNoEncontradoError, EvidenciaTramiteNoEncontradaError,
     DesafioPruebaVidaAccionInvalidaError, DesafioPruebaVidaAgotadoError, DesafioPruebaVidaRequeridoError,
     IdentidadNoEncontradaError, IdentidadTemporalmenteBloqueadaError, NotaryVerifyError,
     RostroCalidadInsuficienteError, RostroMultipleDetectadoError, RostroNoDetectadoError,
@@ -82,6 +83,8 @@ ERROR_CONTRACTS = {
     DesafioPruebaVidaAccionInvalidaError: (409, "LIVENESS_CHALLENGE_ACTION_MISMATCH"),
     TramiteNoHabilitadoError: (409, "PROCEDURE_NOT_ENABLED"),
     DocumentoNoEncontradoError: (404, "DOCUMENT_NOT_FOUND"),
+    DocumentoIntegridadInvalidaError: (409, "DOCUMENT_INTEGRITY_INVALID"),
+    EvidenciaTramiteNoEncontradaError: (404, "PROCEDURE_EVIDENCE_NOT_FOUND"),
 }
 
 
