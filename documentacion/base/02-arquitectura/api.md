@@ -70,6 +70,13 @@ catálogo exige los tres factores, por lo que no permite desactivar RN-01 ni
 RN-04. Cada resultado guarda la versión e instantánea aplicada en
 `decisiones_reglas` y el cambio genera auditoría.
 
+## Consulta QR documental
+
+`GET /documentos/consulta/{identificador}` recibe únicamente el identificador
+opaco `NOTARYVERIFY-DOC-...` del QR documental. Devuelve `INTEGRO` o
+`INTEGRIDAD_NO_VERIFICADA` y la fecha de generación; nunca expone sesión, hash,
+contenido, identidad ni biometría. Un QR de credencial usa otro contrato.
+
 ## Historial de sesiones
 
 `GET /verificaciones` requiere `ADMINISTRADOR` y admite `resultado`,

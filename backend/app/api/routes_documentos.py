@@ -12,6 +12,12 @@ from app.services.documento_service import DocumentoService
 router = APIRouter(prefix="/documentos", tags=["Integridad documental"])
 
 
+@router.get("/consulta/{identificador}", response_model=schemas.ConsultaDocumentoRespuesta)
+def consultar_qr_documental(identificador: str, db: Session = Depends(get_db)):
+    """Contrato público del QR documental, separado de credenciales QR."""
+    return DocumentoService(db).consultar_qr(identificador)
+
+
 @router.post("", response_model=schemas.DocumentoRespuesta, status_code=201)
 def generar_documento(id_sesion: str, contenido: str, db: Session = Depends(get_db)):
     return DocumentoService(db).generar_documento(id_sesion, contenido)

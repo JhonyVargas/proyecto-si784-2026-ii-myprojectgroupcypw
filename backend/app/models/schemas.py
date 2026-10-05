@@ -205,6 +205,12 @@ class IntegridadDocumentoRespuesta(BaseModel):
     hash_calculado: str
 
 
+class ConsultaDocumentoRespuesta(BaseModel):
+    identificador: str
+    estado: str
+    fecha_generacion: datetime
+
+
 class TramiteRespuesta(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
