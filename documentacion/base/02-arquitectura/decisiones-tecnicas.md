@@ -9,6 +9,7 @@
 | Docker Compose local | Reproduce entorno | Plataforma cloud |
 | RFID simulado con UID hexadecimal | No hay hardware disponible; permite probar contrato de lectura sin inventar integración física | Lector RFID físico sin evidencia de disponibilidad |
 | Umbral facial local 0.35 y calidad mínima | Hace reproducible el resultado técnico de LBPH sin afirmar precisión biométrica; exige 120 × 120 px, un rostro y nitidez mínima | Elegir el rostro más grande o aceptar capturas ambiguas |
+| Desafío de vida en servidor | Evita que el cliente elija la acción; registra emisión, vencimiento y una repetición sin conservar vídeo | Confiar en un sorteo JavaScript o almacenar capturas biométricas |
 
 Pendiente: configuración DATABASE_URL, CORS restrictivo y migraciones formales se tratarán en una propuesta posterior porque afectan compatibilidad.
 
@@ -22,3 +23,9 @@ ejecución local (`backend/data/modelos`) y pueden requerir una descarga inicial
 para una demostración real. Esto no afecta a la suite automatizada: sus pruebas
 biométricas usan fixtures sintéticas y adaptadores simulados sin red, cámara ni
 biometría de personas.
+
+La prueba de vida es experimental. MediaPipe observa una acción en una única
+captura posterior a un desafío breve; controla ausencia/multiplicidad de rostro,
+timeout y acciones no detectadas. Las pruebas de fotografía impresa y en
+pantalla son escenarios sintéticos de acción estática no cumplida: no se afirma
+que el sistema pueda distinguir el soporte físico de cualquier píxel recibido.

@@ -21,6 +21,7 @@ from app.api import (
 from app.core.database import init_db
 from app.services.errors import (
     ConsentimientoRequeridoError, CredencialNoRegistradaError, DocumentoNoEncontradoError,
+    DesafioPruebaVidaAccionInvalidaError, DesafioPruebaVidaAgotadoError, DesafioPruebaVidaRequeridoError,
     IdentidadNoEncontradaError, IdentidadTemporalmenteBloqueadaError, NotaryVerifyError,
     RostroCalidadInsuficienteError, RostroMultipleDetectadoError, RostroNoDetectadoError,
     SolicitudCambioReferenciaNoEncontradaError, SolicitudCambioReferenciaNoPendienteError,
@@ -74,6 +75,9 @@ ERROR_CONTRACTS = {
     RostroNoDetectadoError: (422, "FACE_NOT_DETECTED"),
     RostroMultipleDetectadoError: (422, "MULTIPLE_FACES_DETECTED"),
     RostroCalidadInsuficienteError: (422, "FACE_QUALITY_INSUFFICIENT"),
+    DesafioPruebaVidaRequeridoError: (409, "LIVENESS_CHALLENGE_REQUIRED"),
+    DesafioPruebaVidaAgotadoError: (409, "LIVENESS_CHALLENGE_RETRY_LIMIT"),
+    DesafioPruebaVidaAccionInvalidaError: (409, "LIVENESS_CHALLENGE_ACTION_MISMATCH"),
     TramiteNoHabilitadoError: (409, "PROCEDURE_NOT_ENABLED"),
     DocumentoNoEncontradoError: (404, "DOCUMENT_NOT_FOUND"),
 }

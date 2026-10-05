@@ -17,6 +17,9 @@ const MENSAJES_CODIGO = {
   AUTHORIZATION_REQUIRED: "Su rol no puede realizar esta operación.",
   SESSION_NOT_ACTIVE: "La sesión de verificación venció o ya finalizó. Inicie una nueva.",
   IDENTITY_TEMPORARILY_LOCKED: "La identidad tiene un bloqueo temporal por intentos fallidos. Espere o solicite reactivación administrativa.",
+  LIVENESS_CHALLENGE_REQUIRED: "El desafío de vida venció o ya fue resuelto. Inicie una nueva verificación.",
+  LIVENESS_CHALLENGE_RETRY_LIMIT: "Solo puede solicitar una repetición del desafío de vida.",
+  LIVENESS_CHALLENGE_ACTION_MISMATCH: "La captura no corresponde al desafío de vida vigente.",
 };
 
 const $ = (sel) => document.querySelector(sel);
@@ -381,7 +384,7 @@ async function enviarRostro(blob) {
       return;
     }
 
-    sortearAccion();
+    await solicitarDesafio();
     irA("pantalla-vida", 3);
     await abrirCamara("#video-vida", "#sin-camara-vida", "#motivo-camara-vida");
   } finally {
@@ -391,19 +394,23 @@ async function enviarRostro(blob) {
 
 /* ── Paso 3 · Prueba de vida ── */
 
-function sortearAccion() {
-  const claves = Object.keys(ACCIONES);
-  let nueva;
-  do {
-    nueva = claves[Math.floor(Math.random() * claves.length)];
-  } while (claves.length > 1 && nueva === sesion.accion);
-
-  sesion.accion = nueva;
-  $("#texto-accion").textContent = ACCIONES[nueva].titulo;
-  $("#detalle-accion").textContent = ACCIONES[nueva].detalle;
+async function solicitarDesafio() {
+  const desafio = await pedir(`/verificaciones/${sesion.id}/prueba-vida/desafio`, {
+    method: "POST",
+  });
+  sesion.accion = desafio.accion;
+  $("#texto-accion").textContent = ACCIONES[desafio.accion].titulo;
+  $("#detalle-accion").textContent = ACCIONES[desafio.accion].detalle;
 }
 
-$("#boton-otra-accion").addEventListener("click", sortearAccion);
+$("#boton-otra-accion").addEventListener("click", async () => {
+  limpiarErrores();
+  try {
+    await solicitarDesafio();
+  } catch (error) {
+    mostrarError("#error-vida", error.message);
+  }
+});
 
 $("#boton-ejecutar-vida").addEventListener("click", async () => {
   limpiarErrores();
@@ -419,17 +426,6 @@ $("#boton-ejecutar-vida").addEventListener("click", async () => {
     mostrarError("#error-vida", error.message);
   } finally {
     ocupado("#boton-ejecutar-vida", false);
-  }
-});
-
-$("#archivo-vida").addEventListener("change", async (e) => {
-  const archivo = e.target.files[0];
-  if (!archivo) return;
-  limpiarErrores();
-  try {
-    await enviarPruebaVida(archivo);
-  } catch (error) {
-    mostrarError("#error-vida", error.message);
   }
 });
 
@@ -491,7 +487,7 @@ function ocultarCuenta() {
 
 async function enviarPruebaVida(blob) {
   const estado = await pedir(
-    `/verificaciones/${sesion.id}/prueba-vida?accion=${encodeURIComponent(sesion.accion)}`,
+    `/verificaciones/${sesion.id}/prueba-vida`,
     { method: "POST", body: comoFormulario(blob, "prueba-vida.jpg") },
   );
   pintarResultado(estado);

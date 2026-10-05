@@ -30,7 +30,8 @@ def test_mvp_valid_credential_face_and_liveness_are_approved(db_session, tmp_pat
     monkeypatch.setattr(service.liveness, "validar_accion", lambda *_: (True, {"metrica": "simulada"}))
     session = service.iniciar_sesion(credential.codigo, None)
     service.registrar_captura_facial(session.id, b"captura")
-    result = service.registrar_prueba_vida(session.id, "PARPADEO", b"captura")
+    service.emitir_desafio_prueba_vida(session.id)
+    result = service.registrar_prueba_vida(session.id, b"captura")
     assert (result.estado, result.resultado) == (EstadoSesion.COMPLETADA, R.IDENTIDAD_VERIFICADA)
 
 
@@ -49,7 +50,8 @@ def test_mvp_failed_liveness_is_rejected(db_session, tmp_path, monkeypatch):
     monkeypatch.setattr(service.liveness, "validar_accion", lambda *_: (False, {"metrica": "simulada"}))
     session = service.iniciar_sesion(credential.codigo, None)
     service.registrar_captura_facial(session.id, b"captura")
-    assert service.registrar_prueba_vida(session.id, "PARPADEO", b"captura").resultado == R.PRUEBA_DE_VIDA_FALLIDA
+    service.emitir_desafio_prueba_vida(session.id)
+    assert service.registrar_prueba_vida(session.id, b"captura").resultado == R.PRUEBA_DE_VIDA_FALLIDA
 
 
 def test_mvp_unknown_credential_is_rejected(db_session):

@@ -29,7 +29,7 @@ from mediapipe.tasks.python import vision
 
 from app.core.database import DATA_DIR
 from app.models.enums import AccionPruebaVida
-from app.services.errors import RostroNoDetectadoError
+from app.services.errors import RostroMultipleDetectadoError, RostroNoDetectadoError
 
 MODELOS_DIR = DATA_DIR / "modelos"
 MODELOS_DIR.mkdir(parents=True, exist_ok=True)
@@ -77,7 +77,7 @@ def _obtener_landmarker() -> vision.FaceLandmarker:
         _asegurar_modelo_descargado()
         opciones = vision.FaceLandmarkerOptions(
             base_options=mp_python.BaseOptions(model_asset_path=str(RUTA_MODELO)),
-            num_faces=1,
+            num_faces=2,
         )
         _landmarker_cacheado = vision.FaceLandmarker.create_from_options(opciones)
     return _landmarker_cacheado
@@ -114,6 +114,10 @@ class LivenessService:
             raise RostroNoDetectadoError(
                 "No se detectó ningún rostro para evaluar la prueba de vida."
             )
+        if len(resultado.face_landmarks) > 1:
+            raise RostroMultipleDetectadoError(
+                "La prueba de vida requiere exactamente un rostro en cámara."
+            )
         return resultado.face_landmarks[0]
 
     def validar_accion(self, accion: str, imagen_bytes: bytes) -> tuple[bool, dict]:
@@ -122,7 +126,12 @@ class LivenessService:
         if accion == AccionPruebaVida.PARPADEO:
             ear = (_ear(landmarks, _OJO_IZQUIERDO) + _ear(landmarks, _OJO_DERECHO)) / 2.0
             superado = ear < UMBRAL_EAR_CERRADO
-            return superado, {"metrica": "eye_aspect_ratio", "valor": round(ear, 4)}
+            return superado, {
+                "metrica": "eye_aspect_ratio",
+                "valor": round(ear, 4),
+                "motivo": "ACCION_DETECTADA" if superado else "ACCION_NO_DETECTADA",
+                "experimental": True,
+            }
 
         if accion not in (AccionPruebaVida.GIRO_IZQUIERDA, AccionPruebaVida.GIRO_DERECHA):
             raise ValueError(f"Acción de prueba de vida no soportada: '{accion}'.")
@@ -142,4 +151,6 @@ class LivenessService:
         return superado, {
             "metrica": "desplazamiento_horizontal",
             "valor": round(desplazamiento, 4),
+            "motivo": "ACCION_DETECTADA" if superado else "ACCION_NO_DETECTADA",
+            "experimental": True,
         }

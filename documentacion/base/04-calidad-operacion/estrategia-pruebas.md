@@ -56,3 +56,12 @@ El 2026-10-05 se ejecutaron las veinte comparaciones sintéticas locales sin
 red ni modelo descargado. La medición queda automatizada y se repite en cada
 ejecución de pytest. La evaluación con rostros de voluntarios consentidos,
 ataques controlados y métricas de error corresponde a #26, no a esta prueba.
+
+## Evidencia de prueba de vida M3
+
+`backend/tests/test_liveness_challenges.py` verifica sin cámara, red, vídeo ni
+datos personales la emisión aleatoria del desafío, su única repetición,
+vencimiento y auditoría. También simula una fotografía impresa y otra mostrada
+en pantalla como capturas estáticas que no realizan el giro solicitado; ambas
+son rechazadas. Esta evidencia demuestra el comportamiento controlado, no que
+MediaPipe determine el material de una imagen ni que resista ataques avanzados.

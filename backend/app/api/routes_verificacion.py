@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
+from fastapi import APIRouter, Depends, File, Query, UploadFile
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -12,13 +12,6 @@ from app.api.auth import CurrentUser, require_roles
 from app.models.db_models import Usuario
 from app.models.enums import RolUsuario
 from app.models import schemas
-from app.services.errors import (
-    RostroCalidadInsuficienteError,
-    RostroMultipleDetectadoError,
-    RostroNoDetectadoError,
-    SesionNoEncontradaError,
-    SesionNoVigenteError,
-)
 from app.services.verificacion_service import VerificacionService
 
 router = APIRouter(prefix="/verificaciones", tags=["Verificación multicapa"])
@@ -70,31 +63,24 @@ def capturar_rostro(
     usuario: Usuario = Depends(require_roles(RolUsuario.OPERADOR, RolUsuario.ADMINISTRADOR)),
     db: Session = Depends(get_db)
 ):
-    try:
-        imagen_bytes = imagen.file.read()
-        return VerificacionService(db).registrar_captura_facial(id_sesion, imagen_bytes)
-    except SesionNoEncontradaError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
-    except SesionNoVigenteError as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from exc
-    except (RostroNoDetectadoError, RostroMultipleDetectadoError, RostroCalidadInsuficienteError) as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return VerificacionService(db).registrar_captura_facial(id_sesion, imagen.file.read())
+
+
+@router.post("/{id_sesion}/prueba-vida/desafio", response_model=schemas.DesafioPruebaVidaRespuesta)
+def emitir_desafio_prueba_vida(
+    id_sesion: str,
+    usuario: Usuario = Depends(require_roles(RolUsuario.OPERADOR, RolUsuario.ADMINISTRADOR)),
+    db: Session = Depends(get_db),
+):
+    """Genera el desafío aleatorio, temporal y experimental de la sesión."""
+    return VerificacionService(db).emitir_desafio_prueba_vida(id_sesion)
 
 
 @router.post("/{id_sesion}/prueba-vida", response_model=schemas.SesionRespuesta)
 def ejecutar_prueba_vida(
     id_sesion: str,
-    accion: str,
     imagen: UploadFile = File(...),
     usuario: Usuario = Depends(require_roles(RolUsuario.OPERADOR, RolUsuario.ADMINISTRADOR)),
     db: Session = Depends(get_db),
 ):
-    try:
-        imagen_bytes = imagen.file.read()
-        return VerificacionService(db).registrar_prueba_vida(id_sesion, accion, imagen_bytes)
-    except SesionNoEncontradaError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
-    except SesionNoVigenteError as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from exc
-    except (RostroNoDetectadoError, RostroMultipleDetectadoError, RostroCalidadInsuficienteError) as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return VerificacionService(db).registrar_prueba_vida(id_sesion, imagen.file.read())
