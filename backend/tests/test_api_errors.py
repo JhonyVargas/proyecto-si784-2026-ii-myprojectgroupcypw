@@ -1,9 +1,10 @@
 from fastapi.testclient import TestClient
 
 from app.core.database import get_db
-from app.main import app
+from app.main import ERROR_CONTRACTS, app
 from app.models.enums import RolUsuario
 from app.services.auth_service import AuthService
+from app.services.errors import RostroCalidadInsuficienteError, RostroMultipleDetectadoError
 
 
 def test_domain_errors_have_stable_http_contract(db_session):
@@ -21,3 +22,14 @@ def test_domain_errors_have_stable_http_contract(db_session):
             assert identity.json()["detail"]["code"] == "IDENTITY_NOT_FOUND"
     finally:
         app.dependency_overrides.clear()
+
+
+def test_face_capture_quality_rejections_have_stable_contracts():
+    assert ERROR_CONTRACTS[RostroMultipleDetectadoError] == (
+        422,
+        "MULTIPLE_FACES_DETECTED",
+    )
+    assert ERROR_CONTRACTS[RostroCalidadInsuficienteError] == (
+        422,
+        "FACE_QUALITY_INSUFFICIENT",
+    )

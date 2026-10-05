@@ -24,7 +24,23 @@ con `detail.code = AUTHORIZATION_REQUIRED`.
 Los errores de dominio usan `detail.code` estable y un mensaje seguro:
 `CONSENT_REQUIRED` (409), `IDENTITY_NOT_FOUND` y `CREDENTIAL_NOT_FOUND` (404),
 `SESSION_NOT_FOUND` (404), `SESSION_NOT_ACTIVE` (409), `FACE_NOT_DETECTED`
-(422), `PROCEDURE_NOT_ENABLED` (409) y `DOCUMENT_NOT_FOUND` (404).
+(422), `MULTIPLE_FACES_DETECTED` (422), `FACE_QUALITY_INSUFFICIENT` (422),
+`PROCEDURE_NOT_ENABLED` (409) y `DOCUMENT_NOT_FOUND` (404).
+
+## Comparación facial experimental
+
+`POST /verificaciones/{id}/rostro` aplica un preprocesamiento local: decodifica
+la imagen, exige al menos 120 × 120 píxeles, detecta exactamente un rostro,
+recorta, normaliza a 200 × 200 píxeles en escala de grises y ecualiza el
+histograma. Rechaza capturas borrosas con varianza de Laplaciano menor que 20.
+LBPH devuelve una distancia que se normaliza como `max(0, 1 - distancia/100)`;
+el umbral técnico actual es 0.35. Es un parámetro experimental, no una medida de
+identidad legal, precisión ni resistencia a suplantación.
+
+La ausencia, multiplicidad o calidad insuficiente devuelve, respectivamente,
+`FACE_NOT_DETECTED`, `MULTIPLE_FACES_DETECTED` o `FACE_QUALITY_INSUFFICIENT`.
+Los tres son 422 y nunca incluyen imágenes, rutas ni datos biométricos en la
+respuesta.
 
 ## Historial de sesiones
 

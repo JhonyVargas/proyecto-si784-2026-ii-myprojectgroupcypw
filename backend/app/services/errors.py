@@ -45,6 +45,14 @@ class RostroNoDetectadoError(NotaryVerifyError):
     pass
 
 
+class RostroMultipleDetectadoError(NotaryVerifyError):
+    """La captura contiene más de un rostro y no es una evidencia atribuible."""
+
+
+class RostroCalidadInsuficienteError(NotaryVerifyError):
+    """La captura no cumple los mínimos técnicos de resolución o nitidez."""
+
+
 class TramiteNoHabilitadoError(NotaryVerifyError):
     """RN-06: solo se puede enviar un trámite si la sesión fue aprobada."""
 
