@@ -12,7 +12,7 @@ Los números de issue son reales y se consultan en `https://github.com/UPT-FAING
 | RF-03 emitir credencial QR/RFID | #10, #11 | `credencial_service`, `test_rfid_simulado` | QR y RFID simulado verificados |
 | RF-04 leer credencial | #6, #10, #11 | rutas de credenciales, reglas | Parcial |
 | RF-05 capturar y comparar rostro | #18, #24, #26 | `biometria_service`, `test_biometria_liveness` | Umbral y errores reproducibles verificados; evaluación pendiente |
-| RF-06 prueba de vida | #14, #24, #27 | `liveness_service`, pruebas de liveness | Parcial |
+| RF-06 prueba de vida | #14, #24, #27 | `liveness_service`, `test_liveness_challenges` | Desafío, timeout y negativos controlados verificados; evaluación pendiente |
 | RF-07 motor de reglas | #10, #13 | `reglas_service`, `test_reglas_service` | Parcial/configuración pendiente |
 | RF-08 sesión de verificación | #7, #8, #10, #16 | `verificacion_service`, pruebas de flujo | Parcial |
 | RF-09 hash e integridad documental | #15, #16 | `documento_service`, `test_documento_integridad` | Parcial |
@@ -34,8 +34,8 @@ Los números de issue son reales y se consultan en `https://github.com/UPT-FAING
 | RNF-01 cuatro pasos/usabilidad | #9, #10 | recorrido UI y `test_mvp_scenarios` | Verificado M1 |
 | RNF-02 comparación < 3 s | #18, #24 | 20 comparaciones sintéticas con guarda < 3 s | Guarda técnica verificada; medición real pendiente |
 | RNF-03 disponibilidad 95 % | #23, #25 | healthcheck y reporte de uptime | Pendiente |
-| RNF-04 flujo < 45 s | #10, #14, #24 | 20 sesiones medidas | Pendiente |
-| RNF-05 FPR combinado < 5 % | #18, #26, #27 | protocolo y métricas agregadas | #18 no afirma FPR; evaluación pendiente |
+| RNF-04 flujo < 45 s | #10, #14, #24 | timeout técnico de 20 s; 20 sesiones medidas | Timeout verificado; medición integral pendiente |
+| RNF-05 FPR combinado < 5 % | #18, #26, #27 | protocolo y métricas agregadas | #14 no afirma FPR; evaluación pendiente |
 | RNF-06 autenticación y acceso | #4, #5, #22 | `test_auth`, `test_authorization` | Verificado M1; endurecimiento en #22 |
 | RNF-07 HTTPS/TLS | #22 | configuración de staging y guía | Pendiente |
 | RNF-08 navegadores vigentes | #9, #25 | matriz Chrome/Edge/Firefox | Pendiente |

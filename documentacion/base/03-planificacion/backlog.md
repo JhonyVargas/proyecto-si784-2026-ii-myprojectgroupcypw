@@ -57,7 +57,9 @@ difirió. El criterio de salida M2 queda cubierto sin alterar el QR del MVP.
 
 ## Estado M3
 
-La issue #18 está implementada: la comparación facial tiene preprocesamiento,
-umbral técnico y errores normalizados, con veinte ejecuciones sintéticas sin
-red. No mide precisión biométrica ni FPR. Las issues #14 y #13 completan la
-prueba de vida experimental y las reglas configurables respectivamente.
+Las issues #18 y #14 están implementadas: la comparación facial tiene
+preprocesamiento, umbral técnico y errores normalizados; la prueba de vida usa
+un desafío temporal emitido por el servidor y negativos controlados. Ambas usan
+evidencia sintética sin red y no afirman precisión/FPR ni resistencia
+certificada. La issue #13 completa las reglas configurables y permanece en la
+ruta crítica de M3.

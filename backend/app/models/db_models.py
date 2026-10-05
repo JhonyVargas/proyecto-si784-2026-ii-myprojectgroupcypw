@@ -124,6 +124,23 @@ class SesionVerificacion(Base):
     fecha_fin: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
 
+class DesafioPruebaVida(Base):
+    """Estado mínimo de un desafío de vida; nunca conserva la captura."""
+
+    __tablename__ = "desafios_prueba_vida"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    id_sesion: Mapped[str] = mapped_column(
+        ForeignKey("sesiones_verificacion.id"), unique=True, index=True
+    )
+    accion: Mapped[str] = mapped_column(String(20))
+    estado: Mapped[str] = mapped_column(String(20), default="PENDIENTE")
+    reintentos: Mapped[int] = mapped_column(Integer, default=0)
+    fecha_emision: Mapped[datetime] = mapped_column(DateTime, default=_now)
+    fecha_vencimiento: Mapped[datetime] = mapped_column(DateTime)
+    fecha_resolucion: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+
+
 class AlertaIntentosFallidos(Base):
     __tablename__ = "alertas_intentos_fallidos"
 

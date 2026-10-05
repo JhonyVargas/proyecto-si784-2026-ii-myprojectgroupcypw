@@ -53,6 +53,18 @@ class RostroCalidadInsuficienteError(NotaryVerifyError):
     """La captura no cumple los mínimos técnicos de resolución o nitidez."""
 
 
+class DesafioPruebaVidaRequeridoError(NotaryVerifyError):
+    """No puede evaluarse una captura sin el desafío emitido por el servidor."""
+
+
+class DesafioPruebaVidaAgotadoError(NotaryVerifyError):
+    """Ya se consumió la única repetición permitida del desafío activo."""
+
+
+class DesafioPruebaVidaAccionInvalidaError(NotaryVerifyError):
+    """La acción enviada no coincide con el desafío pendiente."""
+
+
 class TramiteNoHabilitadoError(NotaryVerifyError):
     """RN-06: solo se puede enviar un trámite si la sesión fue aprobada."""
 

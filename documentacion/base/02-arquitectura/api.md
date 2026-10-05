@@ -42,6 +42,26 @@ La ausencia, multiplicidad o calidad insuficiente devuelve, respectivamente,
 Los tres son 422 y nunca incluyen imágenes, rutas ni datos biométricos en la
 respuesta.
 
+## Prueba de vida experimental
+
+Tras una comparación facial aprobada, `POST /verificaciones/{id}/prueba-vida/desafio`
+emite en el servidor una acción aleatoria (`PARPADEO`, `GIRO_IZQUIERDA` o
+`GIRO_DERECHA`) válida durante 20 segundos. Solo permite una repetición, que
+queda auditada; no se acepta una acción elegida por el cliente. La captura se
+envía a `POST /verificaciones/{id}/prueba-vida` sin un parámetro de acción.
+
+El desafío, vencimiento, repetición, resultado y motivo quedan en la bitácora,
+sin vídeo, imagen, landmarks ni métricas biométricas persistidas. Un desafío
+vencido finaliza la sesión como `PRUEBA_DE_VIDA_FALLIDA`. Los códigos estables
+son `LIVENESS_CHALLENGE_REQUIRED`, `LIVENESS_CHALLENGE_RETRY_LIMIT` y
+`LIVENESS_CHALLENGE_ACTION_MISMATCH` (409), además de los errores 422 de
+ausencia o múltiples rostros.
+
+El mecanismo es experimental: verifica una acción en una captura de cámara y
+rechaza las capturas estáticas que no cumplen el desafío en los casos
+controlados. No identifica de forma fiable si los píxeles proceden de papel,
+pantalla u otro medio, ni certifica resistencia ante suplantación.
+
 ## Historial de sesiones
 
 `GET /verificaciones` requiere `ADMINISTRADOR` y admite `resultado`,

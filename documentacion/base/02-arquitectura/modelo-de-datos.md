@@ -6,7 +6,7 @@ La base actual es SQLite local en backend/data/notaryverify.db y se crea con Bas
 | --- | --- |
 | Consentimiento e identidad | consentimientos_biometricos, identidades_simuladas, solicitudes_cambio_referencia |
 | Credenciales y usuario | credenciales, usuarios, sesiones_usuario |
-| Verificación | sesiones_verificacion |
+| Verificación | sesiones_verificacion, desafios_prueba_vida |
 | Evidencia | eventos_auditoria, documentos_verificados, tramites_simulados |
 
 Los datos, modelos descargados y cargas son runtime ignorado. No se deben versionar fotos biométricas ni bases SQLite. Un cambio de esquema debe describir compatibilidad, estrategia de reinicio o migración y pruebas antes de implementarse.
@@ -34,3 +34,11 @@ atómicamente la referencia activa y se elimina la anterior, y al rechazarse se
 elimina la pendiente. La bitácora no incluye la ruta ni contenido de imágenes.
 Las bases SQLite existentes son compatibles porque no se modifica una tabla
 previa; el reinicio local sigue aplicando solo a datos sintéticos.
+
+`desafios_prueba_vida` será una tabla aditiva para RF-06. Guardará únicamente
+la sesión, acción aleatoria, emisión, vencimiento, estado y número de reintentos
+del desafío; no almacena vídeo, imágenes, landmarks ni métricas biométricas.
+El despliegue local debe respaldar o reiniciar `backend/data/notaryverify.db`
+antes de actualizar hasta que exista una migración formal: `create_all` crea la
+tabla nueva pero no es un gestor de migraciones. Las pruebas usarán SQLite en
+memoria y verificarán emisión, vencimiento, repetición y rechazo controlado.

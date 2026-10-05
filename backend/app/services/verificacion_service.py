@@ -9,10 +9,11 @@ en el README/FD01/FD02/FD03 del proyecto.
 from __future__ import annotations
 
 from datetime import datetime, timedelta
+import secrets
 
 from sqlalchemy.orm import Session
 
-from app.models.db_models import AlertaIntentosFallidos, SesionVerificacion, _now
+from app.models.db_models import AlertaIntentosFallidos, DesafioPruebaVida, SesionVerificacion, _now
 from app.models.enums import EstadoCredencial, EstadoSesion
 from app.models.enums import ResultadoVerificacion as R
 from app.services.auditoria_service import AuditoriaService
@@ -20,6 +21,9 @@ from app.services.biometria_service import BiometriaService
 from app.services.credencial_service import CredencialService
 from app.services.errors import (
     CredencialNoRegistradaError,
+    DesafioPruebaVidaAccionInvalidaError,
+    DesafioPruebaVidaAgotadoError,
+    DesafioPruebaVidaRequeridoError,
     IdentidadTemporalmenteBloqueadaError,
     SesionNoEncontradaError,
     SesionNoVigenteError,
@@ -31,6 +35,9 @@ from app.services.reglas_service import ReglasService
 VIGENCIA_SESION = timedelta(minutes=10)
 INTENTOS_FALLIDOS_MAXIMOS = 3
 BLOQUEO_TEMPORAL = timedelta(minutes=15)
+DURACION_DESAFIO_VIDA = timedelta(seconds=20)
+REINTENTOS_DESAFIO_VIDA_MAXIMOS = 1
+ACCIONES_PRUEBA_VIDA = ("PARPADEO", "GIRO_IZQUIERDA", "GIRO_DERECHA")
 
 
 class VerificacionService:
@@ -196,23 +203,108 @@ class VerificacionService:
         return sesion
 
     # ------------------------------------------------------------------
-    # CU-03, paso 5-9: prueba de vida, motor de reglas y resultado final
+    # CU-03, paso 5-9: desafío y prueba de vida, reglas y resultado final
     # ------------------------------------------------------------------
+    def emitir_desafio_prueba_vida(self, id_sesion: str) -> DesafioPruebaVida:
+        """Emite un desafío breve y permite una sola repetición trazable."""
+        sesion = self._obtener_sesion_vigente(id_sesion)
+        if sesion.rostro_coincide is not True:
+            raise ValueError("La comparación facial debe aprobarse antes de la prueba de vida.")
+
+        desafio = self.db.query(DesafioPruebaVida).filter_by(id_sesion=sesion.id).one_or_none()
+        ahora = _now()
+        reemplazo = desafio is not None
+        if desafio is not None and desafio.estado == "PENDIENTE":
+            if desafio.fecha_vencimiento <= ahora:
+                self._vencer_desafio(sesion, desafio)
+                raise DesafioPruebaVidaRequeridoError("El desafío de vida venció; inicie una nueva verificación.")
+            if desafio.reintentos >= REINTENTOS_DESAFIO_VIDA_MAXIMOS:
+                raise DesafioPruebaVidaAgotadoError(
+                    "El desafío actual ya consumió la única repetición permitida."
+                )
+            opciones = [accion for accion in ACCIONES_PRUEBA_VIDA if accion != desafio.accion]
+            desafio.accion = secrets.choice(opciones)
+            desafio.reintentos += 1
+        elif desafio is None:
+            desafio = DesafioPruebaVida(
+                id_sesion=sesion.id,
+                accion=secrets.choice(ACCIONES_PRUEBA_VIDA),
+                fecha_vencimiento=ahora + DURACION_DESAFIO_VIDA,
+            )
+            self.db.add(desafio)
+        else:
+            raise DesafioPruebaVidaRequeridoError(
+                "El desafío anterior ya fue resuelto; inicie una nueva verificación."
+            )
+
+        desafio.estado = "PENDIENTE"
+        desafio.fecha_emision = ahora
+        desafio.fecha_vencimiento = ahora + DURACION_DESAFIO_VIDA
+        self.db.commit()
+        self.db.refresh(desafio)
+        self.auditoria.registrar_evento(
+            sesion.id,
+            "DESAFIO_PRUEBA_DE_VIDA_REEMPLAZADO" if reemplazo else "DESAFIO_PRUEBA_DE_VIDA_EMITIDO",
+            {
+                "accion": desafio.accion,
+                "fecha_vencimiento": desafio.fecha_vencimiento.isoformat(),
+                "reintentos": desafio.reintentos,
+                "experimental": True,
+            },
+        )
+        return desafio
+
+    def _vencer_desafio(self, sesion: SesionVerificacion, desafio: DesafioPruebaVida) -> None:
+        desafio.estado = "VENCIDO"
+        desafio.fecha_resolucion = _now()
+        self.db.commit()
+        self.auditoria.registrar_evento(
+            sesion.id,
+            "PRUEBA_DE_VIDA_VENCIDA",
+            {
+                "accion": desafio.accion,
+                "fecha_vencimiento": desafio.fecha_vencimiento.isoformat(),
+                "motivo": "TIEMPO_AGOTADO",
+                "experimental": True,
+            },
+        )
+        self._finalizar_con_resultado(sesion, R.PRUEBA_DE_VIDA_FALLIDA)
+
     def registrar_prueba_vida(
-        self, id_sesion: str, accion: str, imagen_bytes: bytes
+        self, id_sesion: str, imagen_bytes: bytes, accion: str | None = None
     ) -> SesionVerificacion:
         sesion = self._obtener_sesion_vigente(id_sesion)
-        superado, detalle = self.liveness.validar_accion(accion, imagen_bytes)
+        desafio = self.db.query(DesafioPruebaVida).filter_by(id_sesion=sesion.id).one_or_none()
+        if desafio is None or desafio.estado != "PENDIENTE":
+            raise DesafioPruebaVidaRequeridoError(
+                "Solicite un desafío de vida vigente antes de enviar una captura."
+            )
+        if desafio.fecha_vencimiento <= _now():
+            self._vencer_desafio(sesion, desafio)
+            return sesion
+        if accion is not None and accion != desafio.accion:
+            raise DesafioPruebaVidaAccionInvalidaError(
+                "La acción enviada no coincide con el desafío de vida vigente."
+            )
 
-        sesion.prueba_vida_accion = accion
+        superado, detalle = self.liveness.validar_accion(desafio.accion, imagen_bytes)
+
+        sesion.prueba_vida_accion = desafio.accion
         sesion.prueba_vida_superada = superado
+        desafio.estado = "RESUELTO"
+        desafio.fecha_resolucion = _now()
         self.db.commit()
         self.db.refresh(sesion)
 
         self.auditoria.registrar_evento(
             sesion.id,
             "PRUEBA_DE_VIDA_EVALUADA",
-            {"accion": accion, "superado": superado, **detalle},
+            {
+                "accion": desafio.accion,
+                "superado": superado,
+                "fecha_vencimiento": desafio.fecha_vencimiento.isoformat(),
+                **detalle,
+            },
         )
 
         resultado = self.reglas.evaluar(
