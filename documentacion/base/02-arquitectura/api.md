@@ -62,6 +62,14 @@ rechaza las capturas estáticas que no cumplen el desafío en los casos
 controlados. No identifica de forma fiable si los píxeles proceden de papel,
 pantalla u otro medio, ni certifica resistencia ante suplantación.
 
+## Reglas configurables
+
+`GET` y `POST /reglas/configuracion` permiten a Administrador o Auditor ver y
+versionar el orden de prioridad de `CREDENCIAL`, `ROSTRO` y `PRUEBA_VIDA`. El
+catálogo exige los tres factores, por lo que no permite desactivar RN-01 ni
+RN-04. Cada resultado guarda la versión e instantánea aplicada en
+`decisiones_reglas` y el cambio genera auditoría.
+
 ## Historial de sesiones
 
 `GET /verificaciones` requiere `ADMINISTRADOR` y admite `resultado`,

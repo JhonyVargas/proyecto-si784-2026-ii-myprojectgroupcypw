@@ -47,7 +47,7 @@ class VerificacionService:
         self.identidades = IdentidadService(db)
         self.biometria = BiometriaService()
         self.liveness = LivenessService()
-        self.reglas = ReglasService()
+        self.reglas = ReglasService(db)
         self.auditoria = AuditoriaService(db)
 
     # ------------------------------------------------------------------
@@ -325,6 +325,8 @@ class VerificacionService:
         sesion.fecha_fin = _now()
         self.db.commit()
         self.db.refresh(sesion)
+
+        self.reglas.registrar_decision(sesion, resultado)
 
         self.auditoria.registrar_evento(sesion.id, "SESION_FINALIZADA", {"resultado": resultado})
 

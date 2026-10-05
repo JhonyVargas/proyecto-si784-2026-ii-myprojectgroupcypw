@@ -61,5 +61,5 @@ Las issues #18 y #14 están implementadas: la comparación facial tiene
 preprocesamiento, umbral técnico y errores normalizados; la prueba de vida usa
 un desafío temporal emitido por el servidor y negativos controlados. Ambas usan
 evidencia sintética sin red y no afirman precisión/FPR ni resistencia
-certificada. La issue #13 completa las reglas configurables y permanece en la
-ruta crítica de M3.
+certificada. La issue #13 completa M3 con prioridades versionadas, catálogo
+obligatorio y una instantánea por decisión.

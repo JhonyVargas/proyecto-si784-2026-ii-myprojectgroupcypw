@@ -141,6 +141,25 @@ class DesafioPruebaVida(Base):
     fecha_resolucion: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
 
+class ConfiguracionReglas(Base):
+    __tablename__ = "configuraciones_reglas"
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    version: Mapped[int] = mapped_column(Integer, unique=True, index=True)
+    prioridades: Mapped[str] = mapped_column(Text)
+    creada_por: Mapped[str | None] = mapped_column(ForeignKey("usuarios.id"), nullable=True)
+    fecha_creacion: Mapped[datetime] = mapped_column(DateTime, default=_now)
+
+
+class DecisionReglas(Base):
+    __tablename__ = "decisiones_reglas"
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=_uuid)
+    id_sesion: Mapped[str] = mapped_column(ForeignKey("sesiones_verificacion.id"), unique=True, index=True)
+    id_configuracion: Mapped[str] = mapped_column(ForeignKey("configuraciones_reglas.id"))
+    configuracion_aplicada: Mapped[str] = mapped_column(Text)
+    resultado: Mapped[str] = mapped_column(String(40))
+    fecha_decision: Mapped[datetime] = mapped_column(DateTime, default=_now)
+
+
 class AlertaIntentosFallidos(Base):
     __tablename__ = "alertas_intentos_fallidos"
 

@@ -15,7 +15,7 @@ from app.services.auditoria_service import AuditoriaService
 
 router = APIRouter(
     prefix="/auditoria", tags=["Bitácora de auditoría"],
-    dependencies=[Depends(require_roles(RolUsuario.ADMINISTRADOR))],
+    dependencies=[Depends(require_roles(RolUsuario.ADMINISTRADOR, RolUsuario.AUDITOR))],
 )
 
 

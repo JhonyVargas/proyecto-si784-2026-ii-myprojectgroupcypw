@@ -13,7 +13,7 @@ Los números de issue son reales y se consultan en `https://github.com/UPT-FAING
 | RF-04 leer credencial | #6, #10, #11 | rutas de credenciales, reglas | Parcial |
 | RF-05 capturar y comparar rostro | #18, #24, #26 | `biometria_service`, `test_biometria_liveness` | Umbral y errores reproducibles verificados; evaluación pendiente |
 | RF-06 prueba de vida | #14, #24, #27 | `liveness_service`, `test_liveness_challenges` | Desafío, timeout y negativos controlados verificados; evaluación pendiente |
-| RF-07 motor de reglas | #10, #13 | `reglas_service`, `test_reglas_service` | Parcial/configuración pendiente |
+| RF-07 motor de reglas | #10, #13 | `reglas_service`, `test_configurable_rules` | Configuración versionada verificada |
 | RF-08 sesión de verificación | #7, #8, #10, #16 | `verificacion_service`, pruebas de flujo | Parcial |
 | RF-09 hash e integridad documental | #15, #16 | `documento_service`, `test_documento_integridad` | Parcial |
 | RF-10 QR documental | #15 | servicio documental y consulta planificada | Parcial |
@@ -22,7 +22,7 @@ Los números de issue son reales y se consultan en `https://github.com/UPT-FAING
 | RF-13 trámite SID simulado | #16, #19, #20 | `sid_sunarp_service` | Parcial |
 | RF-14 escenarios de servicio externo | #19, #20 | rutas de trámites, pruebas planificadas | Parcial |
 | RF-15 autenticación | #4, #5 | `test_auth`, `test_authorization` | Verificado M1 |
-| RF-16 configurar reglas | #13 | reglas/administración planificada | No iniciada |
+| RF-16 configurar reglas | #13 | API de reglas, `test_configurable_rules` | Verificado M3 |
 | RF-17 consultar bitácora | #5, #17 | rutas de auditoría, permisos planificados | Parcial |
 | RF-18 filtrar sesiones | #7 | historial y filtros planificados | No iniciada |
 | RF-19 consentimiento biométrico | #5, #12, #26 | `consentimiento_service`, `test_reference_change` | Cambio autorizado verificado; evaluación en #26 |
@@ -46,7 +46,7 @@ Los números de issue son reales y se consultan en `https://github.com/UPT-FAING
 
 | Regla | Issue(s) | Evidencia esperada | Estado base |
 | --- | --- | --- | --- |
-| RN-01 ningún factor aprueba solo | #10, #13 | casos de reglas y configuración válida | Parcial |
+| RN-01 ningún factor aprueba solo | #10, #13 | catálogo obligatorio y casos de reglas | Verificado M3 |
 | RN-02 identidad ficticia | #10, #22, #26 | validación y protocolo sin datos reales | Parcial |
 | RN-03 consentimiento previo | #12, #26 | `test_reference_change`, auditoría | Cambio autorizado verificado; evaluación en #26 |
 | RN-04 credencial revocada | #6, #10 | prueba de rechazo por revocación | Implementado, por verificar E2E |
