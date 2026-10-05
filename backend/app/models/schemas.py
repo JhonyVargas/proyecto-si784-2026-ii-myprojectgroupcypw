@@ -120,6 +120,27 @@ class DesafioPruebaVidaRespuesta(BaseModel):
     fecha_vencimiento: datetime
 
 
+class ConfiguracionReglasCrear(BaseModel):
+    prioridades: list[str]
+
+
+class ConfiguracionReglasRespuesta(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: str
+    version: int
+    prioridades: list[str]
+    creada_por: str | None = None
+    fecha_creacion: datetime
+
+
+class DecisionReglasRespuesta(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id_sesion: str
+    id_configuracion: str
+    configuracion_aplicada: dict
+    resultado: str
+
+
 class AlertaIntentosRespuesta(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

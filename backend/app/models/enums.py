@@ -40,6 +40,7 @@ class ResultadoVerificacion:
 class RolUsuario:
     OPERADOR = "OPERADOR"
     ADMINISTRADOR = "ADMINISTRADOR"
+    AUDITOR = "AUDITOR"
 
 
 class EstadoTramite:

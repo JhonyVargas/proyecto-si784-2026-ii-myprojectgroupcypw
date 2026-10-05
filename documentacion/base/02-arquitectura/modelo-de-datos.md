@@ -6,7 +6,7 @@ La base actual es SQLite local en backend/data/notaryverify.db y se crea con Bas
 | --- | --- |
 | Consentimiento e identidad | consentimientos_biometricos, identidades_simuladas, solicitudes_cambio_referencia |
 | Credenciales y usuario | credenciales, usuarios, sesiones_usuario |
-| Verificación | sesiones_verificacion, desafios_prueba_vida |
+| Verificación | sesiones_verificacion, desafios_prueba_vida, configuraciones_reglas, decisiones_reglas |
 | Evidencia | eventos_auditoria, documentos_verificados, tramites_simulados |
 
 Los datos, modelos descargados y cargas son runtime ignorado. No se deben versionar fotos biométricas ni bases SQLite. Un cambio de esquema debe describir compatibilidad, estrategia de reinicio o migración y pruebas antes de implementarse.
@@ -42,3 +42,10 @@ El despliegue local debe respaldar o reiniciar `backend/data/notaryverify.db`
 antes de actualizar hasta que exista una migración formal: `create_all` crea la
 tabla nueva pero no es un gestor de migraciones. Las pruebas usarán SQLite en
 memoria y verificarán emisión, vencimiento, repetición y rechazo controlado.
+
+`configuraciones_reglas` y `decisiones_reglas` son tablas aditivas para RF-16.
+La primera conserva una versión y prioridades validadas; la segunda vincula una
+sesión con la versión y una instantánea JSON de la configuración aplicada, sin
+biometría. No se modifica `sesiones_verificacion`: las bases SQLite existentes
+deben respaldarse o reiniciarse con datos sintéticos antes de actualizar hasta
+contar con migraciones formales; `create_all` crea solo las tablas nuevas.

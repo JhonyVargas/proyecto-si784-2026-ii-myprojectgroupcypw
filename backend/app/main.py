@@ -15,6 +15,7 @@ from app.api import (
     routes_documentos,
     routes_identidades,
     routes_referencias,
+    routes_reglas,
     routes_tramites,
     routes_verificacion,
 )
@@ -59,6 +60,7 @@ app.include_router(routes_referencias.router)
 app.include_router(routes_auth.router)
 app.include_router(routes_credenciales.router)
 app.include_router(routes_verificacion.router)
+app.include_router(routes_reglas.router)
 app.include_router(routes_documentos.router)
 app.include_router(routes_auditoria.router)
 app.include_router(routes_tramites.router)

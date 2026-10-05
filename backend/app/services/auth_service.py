@@ -59,7 +59,7 @@ class AuthService:
         self.db = db
 
     def create_user(self, nombre: str, correo: str, password: str, rol: str) -> Usuario:
-        if rol not in (RolUsuario.OPERADOR, RolUsuario.ADMINISTRADOR):
+        if rol not in (RolUsuario.OPERADOR, RolUsuario.ADMINISTRADOR, RolUsuario.AUDITOR):
             raise ValueError("Rol local no admitido.")
         if not password:
             raise ValueError("La contraseña no puede estar vacía.")
