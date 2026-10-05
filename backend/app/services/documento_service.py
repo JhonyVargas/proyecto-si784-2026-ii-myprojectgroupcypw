@@ -61,3 +61,19 @@ class DocumentoService:
             hash_esperado=documento.hash_sha256,
             hash_calculado=hash_calculado,
         )
+
+    def consultar_qr(self, identificador: str) -> schemas.ConsultaDocumentoRespuesta:
+        """Consulta pública mínima: no filtra sesión, hash ni contenido."""
+        documento = self.db.query(DocumentoVerificado).filter_by(qr_verificacion=identificador).first()
+        if documento is None:
+            raise DocumentoNoEncontradoError("No existe un documento para el identificador consultado.")
+        try:
+            contenido = open(documento.contenido_path, "rb").read()
+            integro = hashlib.sha256(contenido).hexdigest() == documento.hash_sha256
+        except OSError:
+            integro = False
+        return schemas.ConsultaDocumentoRespuesta(
+            identificador=documento.qr_verificacion,
+            estado="INTEGRO" if integro else "INTEGRIDAD_NO_VERIFICADA",
+            fecha_generacion=documento.fecha_generacion,
+        )
