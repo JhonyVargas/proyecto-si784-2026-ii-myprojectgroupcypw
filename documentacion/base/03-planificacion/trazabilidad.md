@@ -17,13 +17,13 @@ Los números de issue son reales y se consultan en `https://github.com/UPT-FAING
 | RF-08 sesión de verificación | #7, #8, #10, #16 | `verificacion_service`, evidencia sesión-documento-trámite | Evidencia recuperable verificada |
 | RF-09 hash e integridad documental | #15, #16 | `documento_service`, `test_documento_integridad`, `test_sid_simulator` | Integridad previa al trámite verificada |
 | RF-10 QR documental | #15 | servicio documental y consulta planificada | Parcial |
-| RF-11 auditoría encadenada | #16, #17 | `auditoria_service`, eventos de asociación, hash chain | Asociación auditada; reconstrucción global pendiente |
-| RF-12 detectar alteración | #17 | `test_auditoria_hashchain` | Parcial |
+| RF-11 auditoría encadenada | #16, #17 | `auditoria_service`, eventos de asociación, hash chain | Auditoría y reconstrucción autorizada verificadas |
+| RF-12 detectar alteración | #17 | `test_auditoria_hashchain` | Alteración y ruptura verificadas |
 | RF-13 trámite SID simulado | #16, #19, #20 | `sid_sunarp_service`, `test_sid_simulator` | Habilitación y evidencia verificadas; recorrido UI pendiente |
 | RF-14 escenarios de servicio externo | #19, #20 | rutas de trámites, pruebas planificadas | Parcial |
 | RF-15 autenticación | #4, #5 | `test_auth`, `test_authorization` | Verificado M1 |
 | RF-16 configurar reglas | #13 | API de reglas, `test_configurable_rules` | Verificado M3 |
-| RF-17 consultar bitácora | #5, #17 | rutas de auditoría, permisos planificados | Parcial |
+| RF-17 consultar bitácora | #5, #17 | rutas de auditoría, reconstrucción y permisos | Verificado M4 |
 | RF-18 filtrar sesiones | #7 | historial y filtros planificados | No iniciada |
 | RF-19 consentimiento biométrico | #5, #12, #26 | `consentimiento_service`, `test_reference_change` | Cambio autorizado verificado; evaluación en #26 |
 
@@ -40,7 +40,7 @@ Los números de issue son reales y se consultan en `https://github.com/UPT-FAING
 | RNF-07 HTTPS/TLS | #22 | configuración de staging y guía | Pendiente |
 | RNF-08 navegadores vigentes | #9, #25 | matriz Chrome/Edge/Firefox | Pendiente |
 | RNF-09 mantenibilidad | #6, #21, #23 | capas, documentación y CI | Parcial |
-| RNF-10 recuperación de auditoría | #16, #17 | reconstrucción de evidencia, alteración controlada | Evidencia de trámite verificada; reconstrucción global pendiente |
+| RNF-10 recuperación de auditoría | #16, #17 | reconstrucción de evidencia, alteración controlada | Verificado M4 |
 
 ## Reglas de negocio
 
@@ -52,7 +52,7 @@ Los números de issue son reales y se consultan en `https://github.com/UPT-FAING
 | RN-04 credencial revocada | #6, #10 | prueba de rechazo por revocación | Implementado, por verificar E2E |
 | RN-05 intentos fallidos | #8, #10 | `test_temporary_lockout`, auditoría | Verificado M1 |
 | RN-06 trámite condicionado | #16, #19, #20 | bloqueo de sesión rechazada y documento ajeno | Verificado en servicio; recorrido UI pendiente |
-| RN-07 bitácora inmutable | #17 | alteración detectada y acceso restringido | Parcial |
+| RN-07 bitácora inmutable | #17 | alteración detectada y acceso restringido | Verificado M4 |
 | RN-08 integridad previa a trámite | #15, #16 | documento modificado bloquea trámite | Verificado |
 | RN-09 cambio biométrico autorizado | #5, #12 | `test_reference_change`, evento de auditoría | Verificado M2 |
 | RN-10 vigencia de sesión | #7 | expiración tras diez minutos | No iniciada |

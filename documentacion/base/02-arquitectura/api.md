@@ -128,6 +128,17 @@ resultado de sesión, estado del trámite, estado actual de integridad y fecha.
 No expone contenido, hash, ruta, identidad ni biometría. El SID-Sunarp sigue
 siendo una simulación académica sin conexión a servicios reales.
 
+## Bitácora y reconstrucción autorizada
+
+Todas las rutas de `/auditoria` requieren `ADMINISTRADOR` o `AUDITOR`.
+`GET /auditoria/eventos` entrega los metadatos encadenados de la bitácora y
+`GET /auditoria/verificar-cadena` detecta una alteración o ruptura. Para una
+sesión existente, `GET /auditoria/sesiones/{id_sesion}/reconstruccion` presenta
+su catálogo mínimo de operaciones críticas: tipo, actor (o `SISTEMA` cuando no
+hay actor humano), entidad, identificador, payload permitido, fecha y secuencia.
+El contrato filtra deliberadamente el detalle crudo: no publica códigos de
+credencial, contenido, hashes, rutas ni métricas biométricas.
+
 Los routers y OpenAPI son la fuente de detalle de payloads. Al cambiar un endpoint, actualizar esta guía, pruebas de API y documentación OpenAPI.
 
 ## RFID simulado

@@ -65,3 +65,14 @@ vencimiento y auditoría. También simula una fotografía impresa y otra mostrad
 en pantalla como capturas estáticas que no realizan el giro solicitado; ambas
 son rechazadas. Esta evidencia demuestra el comportamiento controlado, no que
 MediaPipe determine el material de una imagen ni que resista ataques avanzados.
+
+## Evidencia de auditoría recuperable M4
+
+`backend/tests/test_auditoria_hashchain.py` prueba el evento génesis, la cadena
+sin alteraciones, una modificación deliberada, el filtrado por sesión y la
+reconstrucción de una sesión con el catálogo mínimo de actor, entidad y payload.
+La reconstrucción no devuelve el código de credencial incluido en el detalle
+interno de una prueba. `test_authorization.py` verifica además que Operador no
+puede consultar la bitácora ni reconstruir una sesión, mientras Administrador
+sí. Esta evidencia no declara la cadena como blockchain ni permite editar o
+borrar eventos históricos.

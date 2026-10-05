@@ -27,3 +27,8 @@ def listar_eventos(id_sesion: Optional[str] = None, db: Session = Depends(get_db
 @router.get("/verificar-cadena", response_model=schemas.VerificacionCadenaRespuesta)
 def verificar_cadena(db: Session = Depends(get_db)):
     return AuditoriaService(db).verificar_cadena()
+
+
+@router.get("/sesiones/{id_sesion}/reconstruccion", response_model=schemas.ReconstruccionSesionRespuesta)
+def reconstruir_sesion(id_sesion: str, db: Session = Depends(get_db)):
+    return AuditoriaService(db).reconstruir_sesion(id_sesion)
