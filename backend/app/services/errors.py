@@ -71,3 +71,11 @@ class TramiteNoHabilitadoError(NotaryVerifyError):
 
 class DocumentoNoEncontradoError(NotaryVerifyError):
     pass
+
+
+class DocumentoIntegridadInvalidaError(NotaryVerifyError):
+    """RN-08: un documento alterado o inaccesible no habilita un trámite."""
+
+
+class EvidenciaTramiteNoEncontradaError(NotaryVerifyError):
+    pass

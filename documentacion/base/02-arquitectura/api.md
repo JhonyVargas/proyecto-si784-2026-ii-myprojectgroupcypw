@@ -25,7 +25,8 @@ Los errores de dominio usan `detail.code` estable y un mensaje seguro:
 `CONSENT_REQUIRED` (409), `IDENTITY_NOT_FOUND` y `CREDENTIAL_NOT_FOUND` (404),
 `SESSION_NOT_FOUND` (404), `SESSION_NOT_ACTIVE` (409), `FACE_NOT_DETECTED`
 (422), `MULTIPLE_FACES_DETECTED` (422), `FACE_QUALITY_INSUFFICIENT` (422),
-`PROCEDURE_NOT_ENABLED` (409) y `DOCUMENT_NOT_FOUND` (404).
+`PROCEDURE_NOT_ENABLED` (409), `DOCUMENT_NOT_FOUND` (404),
+`DOCUMENT_INTEGRITY_INVALID` (409) y `PROCEDURE_EVIDENCE_NOT_FOUND` (404).
 
 ## Comparación facial experimental
 
@@ -109,6 +110,23 @@ nunca imagen, ruta ni contenido biométrico.
 - /documentos: hash y verificación de documentos de prueba.
 - /auditoria: eventos y validación de cadena.
 - /tramites: simulación condicionada a sesión aprobada.
+
+## Trámite simulado y evidencia recuperable
+
+`POST /tramites` requiere autenticación de `OPERADOR` o `ADMINISTRADOR`, una
+sesión con resultado `IDENTIDAD_VERIFICADA` y el `id_documento` generado para
+esa misma sesión. Antes de crear el trámite, el servidor vuelve a calcular la
+integridad del archivo local: un contenido alterado, ausente o asociado a otra
+sesión responde `DOCUMENT_INTEGRITY_INVALID` o `PROCEDURE_NOT_ENABLED` y no
+crea trámite ni evento de auditoría.
+
+La asociación de sesión, documento y trámite queda en `evidencias_tramite` y
+genera los eventos append-only `EVIDENCIA_TRAMITE_ASOCIADA` y
+`TRAMITE_SIMULADO_EVALUADO`. `GET /tramites/{id_tramite}/evidencia` requiere
+`ADMINISTRADOR` o `AUDITOR`; reconstruye solamente identificadores internos,
+resultado de sesión, estado del trámite, estado actual de integridad y fecha.
+No expone contenido, hash, ruta, identidad ni biometría. El SID-Sunarp sigue
+siendo una simulación académica sin conexión a servicios reales.
 
 Los routers y OpenAPI son la fuente de detalle de payloads. Al cambiar un endpoint, actualizar esta guía, pruebas de API y documentación OpenAPI.
 

@@ -7,7 +7,7 @@ La base actual es SQLite local en backend/data/notaryverify.db y se crea con Bas
 | Consentimiento e identidad | consentimientos_biometricos, identidades_simuladas, solicitudes_cambio_referencia |
 | Credenciales y usuario | credenciales, usuarios, sesiones_usuario |
 | Verificación | sesiones_verificacion, desafios_prueba_vida, configuraciones_reglas, decisiones_reglas |
-| Evidencia | eventos_auditoria, documentos_verificados, tramites_simulados |
+| Evidencia | eventos_auditoria, documentos_verificados, tramites_simulados, evidencias_tramite |
 
 Los datos, modelos descargados y cargas son runtime ignorado. No se deben versionar fotos biométricas ni bases SQLite. Un cambio de esquema debe describir compatibilidad, estrategia de reinicio o migración y pruebas antes de implementarse.
 
@@ -49,3 +49,15 @@ sesión con la versión y una instantánea JSON de la configuración aplicada, s
 biometría. No se modifica `sesiones_verificacion`: las bases SQLite existentes
 deben respaldarse o reiniciarse con datos sintéticos antes de actualizar hasta
 contar con migraciones formales; `create_all` crea solo las tablas nuevas.
+
+`evidencias_tramite` es una tabla aditiva para RF-08, RF-09, RF-13 y RN-08.
+Relaciona, por identificadores internos, una sesión aprobada, el documento de
+prueba cuya integridad se comprobó y el trámite simulado resultante. No almacena
+el contenido del documento, hashes, rutas, identidad ni biometría; esos datos
+siguen en sus componentes de origen y la vista de evidencia expone solo los
+identificadores y estados mínimos. No modifica tablas existentes, por lo que
+SQLite puede crearla al iniciar mediante `create_all`. Antes de actualizar una
+base local ya existente, se debe respaldar `backend/data/notaryverify.db` o
+reiniciarla si contiene exclusivamente datos sintéticos; no hay todavía una
+migración formal. Las pruebas usan SQLite en memoria y cubren la asociación,
+el rechazo de sesión no aprobada y el bloqueo por documento alterado.
