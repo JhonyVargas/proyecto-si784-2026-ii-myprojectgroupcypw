@@ -1,4 +1,4 @@
-"""Reconocimiento facial local con OpenCV (RF-05, RF-06).
+"""Reconocimiento facial local con OpenCV (RF-05).
 
 Utiliza únicamente herramientas de código abierto (Haar Cascade para
 detección y LBPH — Local Binary Patterns Histograms — para comparación),
@@ -21,11 +21,18 @@ import cv2
 import numpy as np
 
 from app.core.database import DATA_DIR
-from app.services.errors import RostroNoDetectadoError
+from app.services.errors import (
+    RostroCalidadInsuficienteError,
+    RostroMultipleDetectadoError,
+    RostroNoDetectadoError,
+)
 
 TAMANO_ROSTRO = (200, 200)
 UMBRAL_COINCIDENCIA = 0.35
 DISTANCIA_MAXIMA_NORMALIZACION = 100.0
+ANCHO_MINIMO_IMAGEN = 120
+ALTO_MINIMO_IMAGEN = 120
+VARIANZA_LAPLACIANA_MINIMA = 20.0
 
 MODELOS_DIR = DATA_DIR / "modelos"
 MODELOS_DIR.mkdir(parents=True, exist_ok=True)
@@ -81,14 +88,29 @@ def _decodificar(imagen_bytes: bytes) -> np.ndarray:
 
 def _extraer_rostro(imagen_bytes: bytes) -> np.ndarray:
     imagen = _decodificar(imagen_bytes)
+    alto, ancho = imagen.shape[:2]
+    if ancho < ANCHO_MINIMO_IMAGEN or alto < ALTO_MINIMO_IMAGEN:
+        raise RostroCalidadInsuficienteError(
+            "La imagen debe tener al menos 120 x 120 píxeles para comparar el rostro."
+        )
+
     gris = cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY)
     detector = _detector_rostros()
     rostros = detector.detectMultiScale(gris, scaleFactor=1.1, minNeighbors=5, minSize=(60, 60))
     if len(rostros) == 0:
         raise RostroNoDetectadoError("No se detectó ningún rostro en la imagen proporcionada.")
+    if len(rostros) > 1:
+        raise RostroMultipleDetectadoError(
+            "La imagen contiene más de un rostro; capture únicamente a la persona verificada."
+        )
 
-    x, y, w, h = max(rostros, key=lambda r: r[2] * r[3])
+    x, y, w, h = rostros[0]
     recorte = gris[y : y + h, x : x + w]
+    varianza_laplaciana = float(cv2.Laplacian(recorte, cv2.CV_64F).var())
+    if varianza_laplaciana < VARIANZA_LAPLACIANA_MINIMA:
+        raise RostroCalidadInsuficienteError(
+            "La imagen está demasiado borrosa para una comparación facial reproducible."
+        )
     recorte = cv2.resize(recorte, TAMANO_ROSTRO)
     return cv2.equalizeHist(recorte)
 

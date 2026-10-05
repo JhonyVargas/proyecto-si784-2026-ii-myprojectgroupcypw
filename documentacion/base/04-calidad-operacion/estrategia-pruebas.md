@@ -41,3 +41,18 @@ y vida aprobados; rostro no coincidente; prueba de vida fallida; y credencial
 inexistente. Simula explícitamente los adaptadores biométricos para medir el
 flujo, reglas, resultado y persistencia; no sustituye la demostración manual ni
 la evaluación experimental posterior.
+
+## Evidencia reproducible de comparación facial M3
+
+`backend/tests/test_biometria_liveness.py` no descarga `lena.jpg` ni ningún
+otro recurso. Genera patrones de píxeles sintéticos (sin rostros), simula el
+detector y el reconocedor LBPH, y cubre ausencia y multiplicidad de rostros,
+resolución mínima, umbral 0.35 y veinte comparaciones consecutivas. La prueba
+registra una latencia por comparación con `perf_counter` y exige que cada una
+termine antes de tres segundos; es una guarda de regresión técnica, no una
+medición de rendimiento de cámara, detección real, precisión ni FPR.
+
+El 2026-10-05 se ejecutaron las veinte comparaciones sintéticas locales sin
+red ni modelo descargado. La medición queda automatizada y se repite en cada
+ejecución de pytest. La evaluación con rostros de voluntarios consentidos,
+ataques controlados y métricas de error corresponde a #26, no a esta prueba.

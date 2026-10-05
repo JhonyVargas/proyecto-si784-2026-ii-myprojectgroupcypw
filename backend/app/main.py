@@ -21,7 +21,8 @@ from app.api import (
 from app.core.database import init_db
 from app.services.errors import (
     ConsentimientoRequeridoError, CredencialNoRegistradaError, DocumentoNoEncontradoError,
-    IdentidadNoEncontradaError, IdentidadTemporalmenteBloqueadaError, NotaryVerifyError, RostroNoDetectadoError,
+    IdentidadNoEncontradaError, IdentidadTemporalmenteBloqueadaError, NotaryVerifyError,
+    RostroCalidadInsuficienteError, RostroMultipleDetectadoError, RostroNoDetectadoError,
     SolicitudCambioReferenciaNoEncontradaError, SolicitudCambioReferenciaNoPendienteError,
     SesionNoEncontradaError, SesionNoVigenteError, TramiteNoHabilitadoError,
 )
@@ -71,6 +72,8 @@ ERROR_CONTRACTS = {
     SesionNoEncontradaError: (404, "SESSION_NOT_FOUND"),
     SesionNoVigenteError: (409, "SESSION_NOT_ACTIVE"),
     RostroNoDetectadoError: (422, "FACE_NOT_DETECTED"),
+    RostroMultipleDetectadoError: (422, "MULTIPLE_FACES_DETECTED"),
+    RostroCalidadInsuficienteError: (422, "FACE_QUALITY_INSUFFICIENT"),
     TramiteNoHabilitadoError: (409, "PROCEDURE_NOT_ENABLED"),
     DocumentoNoEncontradoError: (404, "DOCUMENT_NOT_FOUND"),
 }

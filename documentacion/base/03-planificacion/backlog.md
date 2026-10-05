@@ -54,3 +54,10 @@ Las issues #11 y #12 están implementadas con evidencia versionada. La decisión
 de #11 es explícita: no hay hardware RFID en esta etapa; el adaptador simulado
 usa UID hexadecimal en mayúsculas sin separadores y una integración física se
 difirió. El criterio de salida M2 queda cubierto sin alterar el QR del MVP.
+
+## Estado M3
+
+La issue #18 está implementada: la comparación facial tiene preprocesamiento,
+umbral técnico y errores normalizados, con veinte ejecuciones sintéticas sin
+red. No mide precisión biométrica ni FPR. Las issues #14 y #13 completan la
+prueba de vida experimental y las reglas configurables respectivamente.

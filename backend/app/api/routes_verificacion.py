@@ -13,6 +13,8 @@ from app.models.db_models import Usuario
 from app.models.enums import RolUsuario
 from app.models import schemas
 from app.services.errors import (
+    RostroCalidadInsuficienteError,
+    RostroMultipleDetectadoError,
     RostroNoDetectadoError,
     SesionNoEncontradaError,
     SesionNoVigenteError,
@@ -75,7 +77,7 @@ def capturar_rostro(
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     except SesionNoVigenteError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
-    except RostroNoDetectadoError as exc:
+    except (RostroNoDetectadoError, RostroMultipleDetectadoError, RostroCalidadInsuficienteError) as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
@@ -94,5 +96,5 @@ def ejecutar_prueba_vida(
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     except SesionNoVigenteError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
-    except RostroNoDetectadoError as exc:
+    except (RostroNoDetectadoError, RostroMultipleDetectadoError, RostroCalidadInsuficienteError) as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
