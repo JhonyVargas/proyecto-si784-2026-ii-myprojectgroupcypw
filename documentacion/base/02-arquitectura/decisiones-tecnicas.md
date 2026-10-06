@@ -12,7 +12,7 @@
 | Persistencia configurable por entorno y reinicio verificado (#21) | `NOTARYVERIFY_DATA_DIR` y `NOTARYVERIFY_DATABASE_URL` con valores por defecto idénticos al prototipo; al iniciar se crean tablas aditivas y se rechaza un esquema con columnas faltantes, con respaldo y reinicio reproducible | Alembic: añade dependencia y migraciones para datos solo sintéticos; motor de base de datos servidor |
 | Desafío de vida en servidor | Evita que el cliente elija la acción; registra emisión, vencimiento y una repetición sin conservar vídeo | Confiar en un sorteo JavaScript o almacenar capturas biométricas |
 
-Pendiente: CORS restrictivo se trata en #22. La configuración de persistencia y la estrategia de cambios de esquema quedaron decididas en #21 (ver `modelo-de-datos.md`, sección "Configuración y cambios de esquema").
+CORS por entorno, validación de cargas y la guía HTTPS se decidieron en #22 (ver `../04-calidad-operacion/seguridad.md`). La configuración de persistencia y la estrategia de cambios de esquema quedaron decididas en #21 (ver `modelo-de-datos.md`, sección "Configuración y cambios de esquema").
 
 La decisión RFID vigente es: no se dispone de lector físico en esta etapa. El
 adaptador local acepta UID hexadecimales en mayúsculas y sin separadores (por

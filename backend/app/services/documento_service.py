@@ -10,8 +10,8 @@ from sqlalchemy.orm import Session
 
 from app.core.database import DATA_DIR
 from app.models import schemas
-from app.models.db_models import DocumentoVerificado
-from app.services.errors import DocumentoNoEncontradoError
+from app.models.db_models import DocumentoVerificado, SesionVerificacion
+from app.services.errors import DocumentoNoEncontradoError, SesionNoEncontradaError
 
 DOCUMENTOS_DIR = DATA_DIR / "documentos"
 DOCUMENTOS_DIR.mkdir(parents=True, exist_ok=True)
@@ -22,20 +22,25 @@ class DocumentoService:
         self.db = db
 
     def generar_documento(self, id_sesion: str, contenido: str) -> DocumentoVerificado:
+        if self.db.get(SesionVerificacion, id_sesion) is None:
+            raise SesionNoEncontradaError(f"No existe la sesión '{id_sesion}'.")
         contenido_bytes = contenido.encode("utf-8")
         hash_sha256 = hashlib.sha256(contenido_bytes).hexdigest()
-
-        ruta = DOCUMENTOS_DIR / f"{id_sesion}.txt"
-        ruta.write_bytes(contenido_bytes)
 
         documento = DocumentoVerificado(
             id_sesion=id_sesion,
             hash_sha256=hash_sha256,
             qr_verificacion="",
-            contenido_path=str(ruta),
+            contenido_path="",
         )
         self.db.add(documento)
         self.db.flush()
+        # El archivo se nombra por el identificador interno del documento: el
+        # cliente no controla la ruta (#22) y varios documentos de una misma
+        # sesión no se sobrescriben entre sí.
+        ruta = DOCUMENTOS_DIR / f"{documento.id}.txt"
+        ruta.write_bytes(contenido_bytes)
+        documento.contenido_path = str(ruta)
         # El QR solo codifica un identificador de consulta; nunca datos
         # personales (ver FD02, sección "Otros requerimientos del producto").
         documento.qr_verificacion = f"NOTARYVERIFY-DOC-{documento.id}"

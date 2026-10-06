@@ -110,6 +110,18 @@ faltante; y el reinicio con respaldo. Dos pruebas arrancan la base en un proceso
 aparte: una con carpeta explícita y otra con URL inválida. El 2026-10-05 la base
 local existente del equipo resultó compatible con la verificación de esquema.
 
+## Privacidad, CORS y cargas M6 (#22)
+
+`backend/tests/test_security_hardening.py` verifica la configuración de
+orígenes y límite de carga; que la API responda CORS a la estación local y no a
+un origen ajeno; que cargas GIF, con contenido que no coincide con su tipo,
+vacías o mayores al límite se rechacen sin crear identidad ni archivo; que una
+carga sin credenciales devuelva 401; y que crear un documento exija rol, sesión
+existente y contenido en el cuerpo. Incluye una revisión estática de logs y de
+secretos versionados. `test_documento_integridad.py` añade que la ruta del
+archivo no depende del cliente y que dos documentos de una sesión no se
+sobrescriben. El despliegue HTTPS de staging está documentado, no ejecutado.
+
 ## Integración continua (#23)
 
 `.github/workflows/ci.yml` se ejecuta en cada pull request, en cada push a main

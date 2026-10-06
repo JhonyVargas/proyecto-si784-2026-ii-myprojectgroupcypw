@@ -36,8 +36,8 @@ Los números de issue son reales y se consultan en `https://github.com/UPT-FAING
 | RNF-03 disponibilidad 95 % | #23, #25 | healthcheck y reporte de uptime | Pendiente |
 | RNF-04 flujo < 45 s | #10, #14, #24 | timeout técnico de 20 s; 20 sesiones medidas | Timeout verificado; medición integral pendiente |
 | RNF-05 FPR combinado < 5 % | #18, #26, #27 | protocolo y métricas agregadas | #14 no afirma FPR; evaluación pendiente |
-| RNF-06 autenticación y acceso | #4, #5, #22 | `test_auth`, `test_authorization` | Verificado M1; endurecimiento en #22 |
-| RNF-07 HTTPS/TLS | #22 | configuración de staging y guía | Pendiente |
+| RNF-06 autenticación y acceso | #4, #5, #22 | `test_auth`, `test_authorization`, `test_security_hardening` | Verificado M1; CORS, cargas y documentos endurecidos (#22) |
+| RNF-07 HTTPS/TLS | #22 | guía de staging en `seguridad.md` | Guía documentada; despliegue HTTPS no ejecutado |
 | RNF-08 navegadores vigentes | #9, #25 | matriz Chrome/Edge/Firefox | Pendiente |
 | RNF-09 mantenibilidad | #6, #21, #23 | capas, documentación, `.github/workflows/ci.yml`, `test_persistence_config` | CI en cada PR (#23); persistencia configurable y reinicio verificado (#21) |
 | RNF-10 recuperación de auditoría | #16, #17 | reconstrucción de evidencia, alteración controlada | Verificado M4 |
@@ -47,7 +47,7 @@ Los números de issue son reales y se consultan en `https://github.com/UPT-FAING
 | Regla | Issue(s) | Evidencia esperada | Estado base |
 | --- | --- | --- | --- |
 | RN-01 ningún factor aprueba solo | #10, #13 | catálogo obligatorio y casos de reglas | Verificado M3 |
-| RN-02 identidad ficticia | #10, #22, #26 | validación y protocolo sin datos reales | Parcial |
+| RN-02 identidad ficticia | #10, #22, #26 | validación, revisión estática de secretos y protocolo sin datos reales | Controles técnicos verificados (#22); protocolo en #26 |
 | RN-03 consentimiento previo | #12, #26 | `test_reference_change`, auditoría | Cambio autorizado verificado; evaluación en #26 |
 | RN-04 credencial revocada | #6, #10 | prueba de rechazo por revocación | Implementado, por verificar E2E |
 | RN-05 intentos fallidos | #8, #10 | `test_temporary_lockout`, auditoría | Verificado M1 |
