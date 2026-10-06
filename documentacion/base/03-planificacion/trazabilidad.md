@@ -32,9 +32,9 @@ Los números de issue son reales y se consultan en `https://github.com/UPT-FAING
 | Requisito | Issue(s) | Evidencia esperada | Estado base |
 | --- | --- | --- | --- |
 | RNF-01 cuatro pasos/usabilidad | #9, #10 | recorrido UI y `test_mvp_scenarios` | Verificado M1 |
-| RNF-02 comparación < 3 s | #18, #24 | 20 comparaciones sintéticas con guarda < 3 s | Guarda técnica verificada; medición real pendiente |
+| RNF-02 comparación < 3 s | #18, #24 | `benchmarks/medir_rendimiento.py`, `test_rendimiento`, [rendimiento](../04-calidad-operacion/rendimiento.md) | Benchmark técnico 0,021 s promedio (#24); medición con cámara pendiente |
 | RNF-03 disponibilidad 95 % | #23, #25 | healthcheck y reporte de uptime | Pendiente |
-| RNF-04 flujo < 45 s | #10, #14, #24 | timeout técnico de 20 s; 20 sesiones medidas | Timeout verificado; medición integral pendiente |
+| RNF-04 flujo < 45 s | #10, #14, #24 | timeout de 20 s; 20 sesiones HTTP medidas en `rendimiento.md` | Costo del sistema 0,10 s promedio (#24); medición con tiempo humano pendiente |
 | RNF-05 FPR combinado < 5 % | #18, #26, #27 | protocolo y métricas agregadas | #14 no afirma FPR; evaluación pendiente |
 | RNF-06 autenticación y acceso | #4, #5, #22 | `test_auth`, `test_authorization`, `test_security_hardening` | Verificado M1; CORS, cargas y documentos endurecidos (#22) |
 | RNF-07 HTTPS/TLS | #22 | guía de staging en `seguridad.md` | Guía documentada; despliegue HTTPS no ejecutado |

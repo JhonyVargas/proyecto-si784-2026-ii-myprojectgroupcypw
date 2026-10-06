@@ -23,3 +23,5 @@ Thumbs.db
 
 # Reportes de CI generados localmente
 backend/pytest-report.xml
+backend/benchmarks/*.json
+backend/reporte*.json
