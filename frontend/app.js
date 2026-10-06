@@ -20,6 +20,11 @@ const MENSAJES_CODIGO = {
   LIVENESS_CHALLENGE_REQUIRED: "El desafío de vida venció o ya fue resuelto. Inicie una nueva verificación.",
   LIVENESS_CHALLENGE_RETRY_LIMIT: "Solo puede solicitar una repetición del desafío de vida.",
   LIVENESS_CHALLENGE_ACTION_MISMATCH: "La captura no corresponde al desafío de vida vigente.",
+  PROCEDURE_NOT_ENABLED: "El trámite solo se habilita con identidad verificada y un documento de la misma sesión.",
+  DOCUMENT_INTEGRITY_INVALID: "El documento no conserva su integridad. Registre un documento nuevo antes de enviar el trámite.",
+  DOCUMENT_NOT_FOUND: "El documento del trámite no existe. Regístrelo nuevamente.",
+  SESSION_NOT_FOUND: "La sesión de verificación no existe. Inicie una nueva verificación.",
+  INPUT_INVALID: "Los datos enviados no son válidos.",
 };
 
 const $ = (sel) => document.querySelector(sel);
@@ -512,6 +517,7 @@ function pintarResultado(estado) {
 
   pintarFactores(estado);
   pintarDetalle(estado);
+  prepararTramite(estado);
   irA("pantalla-resultado", 4);
 }
 
@@ -562,6 +568,121 @@ function pintarDetalle(estado) {
     .join("");
 }
 
+/* ── Trámite simulado SID-Sunarp (RF-13, RF-14, RN-06, RN-08) ──
+ * El resultado del trámite se muestra aparte del veredicto: un fallo del
+ * servicio externo simulado no cambia la verificación de identidad. */
+
+const ESTADOS_TRAMITE = {
+  ENVIADO: {
+    tono: "ok", titulo: "Trámite recibido por el simulador",
+    motivo: "El servicio simulado aceptó el envío. La evidencia queda asociada a la sesión y al documento.",
+  },
+  RECHAZADO: {
+    tono: "mal", titulo: "Trámite rechazado por el servicio simulado",
+    motivo: "El rechazo corresponde al trámite, no a la identidad. Revise el documento antes de un nuevo envío.",
+  },
+  ERROR_SERVICIO: {
+    tono: "aviso", titulo: "Servicio externo no disponible",
+    motivo: "El servicio simulado no respondió. La identidad sigue verificada; puede reintentar el envío.",
+  },
+  TIEMPO_AGOTADO: {
+    tono: "aviso", titulo: "Tiempo de espera agotado",
+    motivo: "El servicio simulado tardó demasiado. La identidad sigue verificada; puede reintentar el envío.",
+  },
+  RESPUESTA_INVALIDA: {
+    tono: "aviso", titulo: "Respuesta inválida del servicio",
+    motivo: "La respuesta simulada no pudo interpretarse. Puede reintentar el envío.",
+  },
+  ERROR_INTERNO: {
+    tono: "aviso", titulo: "Error interno del servicio simulado",
+    motivo: "El servicio simulado reportó un error propio. Puede reintentar el envío.",
+  },
+};
+
+const tramite = { idDocumento: null, hash: null };
+
+function prepararTramite(estado) {
+  tramite.idDocumento = null;
+  tramite.hash = null;
+  $("#tramite").hidden = estado.resultado !== "IDENTIDAD_VERIFICADA";
+  $("#tramite-documento").hidden = false;
+  $("#tramite-envio").hidden = true;
+  $("#tramite-estado").hidden = true;
+  $("#tramite-evidencia").hidden = true;
+  $("#boton-tramite .boton__texto").textContent = "Enviar trámite simulado";
+  mostrarError("#error-tramite", "");
+}
+
+$("#boton-documento").addEventListener("click", async () => {
+  mostrarError("#error-tramite", "");
+  const contenido = $("#tramite-contenido").value.trim();
+  if (!contenido) {
+    mostrarError("#error-tramite", "Escriba el contenido ficticio del documento.");
+    return;
+  }
+  ocupado("#boton-documento", true);
+  try {
+    const parametros = new URLSearchParams({ id_sesion: sesion.id, contenido });
+    const documento = await pedir(`/documentos?${parametros}`, { method: "POST" });
+    tramite.idDocumento = documento.id;
+    tramite.hash = documento.hash_sha256;
+    mostrarExito("#tramite-integridad",
+      `Documento registrado con huella SHA-256 ${documento.hash_sha256.slice(0, 12)}…`);
+    $("#tramite-documento").hidden = true;
+    $("#tramite-envio").hidden = false;
+  } catch (e) {
+    mostrarError("#error-tramite", e.message);
+  } finally {
+    ocupado("#boton-documento", false);
+  }
+});
+
+$("#boton-tramite").addEventListener("click", async () => {
+  mostrarError("#error-tramite", "");
+  ocupado("#boton-tramite", true);
+  try {
+    const parametros = new URLSearchParams({
+      id_sesion: sesion.id,
+      id_documento: tramite.idDocumento,
+      escenario: $("#tramite-escenario").value,
+    });
+    const respuesta = await pedir(`/tramites?${parametros}`, { method: "POST" });
+    pintarTramite(respuesta);
+  } catch (e) {
+    mostrarError("#error-tramite", e.message);
+  } finally {
+    ocupado("#boton-tramite", false);
+  }
+});
+
+function pintarTramite(respuesta) {
+  const info = ESTADOS_TRAMITE[respuesta.estado] || {
+    tono: "aviso", titulo: respuesta.estado, motivo: "Estado del simulador no reconocido.",
+  };
+  const caja = $("#tramite-estado");
+  caja.dataset.tono = info.tono;
+  $("#tramite-estado-titulo").textContent = info.titulo;
+  $("#tramite-estado-motivo").textContent = info.motivo;
+  caja.hidden = false;
+
+  const campos = [
+    ["Trámite", respuesta.id],
+    ["Estado del trámite", respuesta.estado],
+    ["Documento", tramite.idDocumento],
+    ["SHA-256", tramite.hash],
+    ["Fecha", formatearFecha(respuesta.fecha)],
+    ["Verificación", "Identidad verificada (sin cambios)"],
+  ];
+  const evidencia = $("#tramite-evidencia");
+  evidencia.innerHTML = campos
+    .map(([k, v]) => `<dt>${k}</dt><dd>${escapar(String(v))}</dd>`)
+    .join("");
+  evidencia.hidden = false;
+
+  $("#boton-tramite .boton__texto").textContent =
+    respuesta.estado === "ENVIADO" ? "Enviar otro trámite simulado" : "Reintentar envío";
+}
+
 /* ── Reinicio ── */
 
 $("#boton-nueva").addEventListener("click", reiniciar);
@@ -574,6 +695,9 @@ function reiniciar() {
   sesion.id = null;
   sesion.codigo = null;
   sesion.accion = null;
+  tramite.idDocumento = null;
+  tramite.hash = null;
+  $("#tramite").hidden = true;
   $("#entrada-codigo").value = "";
   irA("pantalla-credencial", 1);
   $("#entrada-codigo").focus();
