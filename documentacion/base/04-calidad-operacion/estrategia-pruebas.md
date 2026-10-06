@@ -99,6 +99,17 @@ Recorrido manual pendiente de registrar por el equipo: con cámara, completar
 una verificación aprobada, registrar el documento, enviar un escenario de fallo,
 reintentar y comprobar que una verificación rechazada no muestra la sección.
 
+## Persistencia configurable M6 (#21)
+
+`backend/tests/test_persistence_config.py` verifica sin red ni datos reales: la
+configuración por defecto conserva las rutas del prototipo; las variables vacías
+equivalen a no definirlas; la configuración explícita y la derivada de
+`NOTARYVERIFY_DATA_DIR`; el rechazo de URL que no son SQLite; la creación de una
+tabla aditiva sin tocar datos; la detención con instrucciones ante una columna
+faltante; y el reinicio con respaldo. Dos pruebas arrancan la base en un proceso
+aparte: una con carpeta explícita y otra con URL inválida. El 2026-10-05 la base
+local existente del equipo resultó compatible con la verificación de esquema.
+
 ## Integración continua (#23)
 
 `.github/workflows/ci.yml` se ejecuta en cada pull request, en cada push a main
