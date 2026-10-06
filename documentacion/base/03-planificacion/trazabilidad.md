@@ -19,8 +19,8 @@ Los números de issue son reales y se consultan en `https://github.com/UPT-FAING
 | RF-10 QR documental | #15 | servicio documental y consulta planificada | Parcial |
 | RF-11 auditoría encadenada | #16, #17 | `auditoria_service`, eventos de asociación, hash chain | Auditoría y reconstrucción autorizada verificadas |
 | RF-12 detectar alteración | #17 | `test_auditoria_hashchain` | Alteración y ruptura verificadas |
-| RF-13 trámite SID simulado | #16, #19, #20 | `sid_sunarp_service`, `test_sid_simulator` | Habilitación y evidencia verificadas; recorrido UI pendiente |
-| RF-14 escenarios de servicio externo | #19, #20 | rutas de trámites, pruebas planificadas | Parcial |
+| RF-13 trámite SID simulado | #16, #19, #20 | `sid_sunarp_service`, `test_sid_simulator`, sección de trámite en `frontend/` | Habilitación, evidencia y recorrido UI verificados (#20) |
+| RF-14 escenarios de servicio externo | #19, #20 | rutas de trámites, seis escenarios en `test_sid_simulator` y selector UI | Escenarios, fallo y reintento verificados (#20) |
 | RF-15 autenticación | #4, #5 | `test_auth`, `test_authorization` | Verificado M1 |
 | RF-16 configurar reglas | #13 | API de reglas, `test_configurable_rules` | Verificado M3 |
 | RF-17 consultar bitácora | #5, #17 | rutas de auditoría, reconstrucción y permisos | Verificado M4 |
@@ -51,7 +51,7 @@ Los números de issue son reales y se consultan en `https://github.com/UPT-FAING
 | RN-03 consentimiento previo | #12, #26 | `test_reference_change`, auditoría | Cambio autorizado verificado; evaluación en #26 |
 | RN-04 credencial revocada | #6, #10 | prueba de rechazo por revocación | Implementado, por verificar E2E |
 | RN-05 intentos fallidos | #8, #10 | `test_temporary_lockout`, auditoría | Verificado M1 |
-| RN-06 trámite condicionado | #16, #19, #20 | bloqueo de sesión rechazada y documento ajeno | Verificado en servicio; recorrido UI pendiente |
+| RN-06 trámite condicionado | #16, #19, #20 | bloqueo de sesión rechazada y documento ajeno; UI oculta el trámite sin identidad verificada | Verificado en servicio y UI (#20) |
 | RN-07 bitácora inmutable | #17 | alteración detectada y acceso restringido | Verificado M4 |
 | RN-08 integridad previa a trámite | #15, #16 | documento modificado bloquea trámite | Verificado |
 | RN-09 cambio biométrico autorizado | #5, #12 | `test_reference_change`, evento de auditoría | Verificado M2 |

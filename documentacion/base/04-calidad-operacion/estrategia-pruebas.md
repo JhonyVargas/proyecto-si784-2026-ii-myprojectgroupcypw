@@ -79,6 +79,26 @@ puede consultar la bitácora ni reconstruir una sesión, mientras Administrador
 sí. Esta evidencia no declara la cadena como blockchain ni permite editar o
 borrar eventos históricos.
 
+## Trámite simulado en la interfaz M5 (#20)
+
+La pantalla de resultado muestra la sección "Trámite simulado SID-Sunarp" solo
+cuando la sesión termina en IDENTIDAD_VERIFICADA. El operador registra un
+documento ficticio, elige un escenario del simulador y envía el trámite. El
+estado del trámite se presenta aparte del veredicto, con evidencia mínima
+(trámite, documento, huella SHA-256, fecha) y la indicación de que la
+verificación no cambia. Los fallos externos ofrecen reintentar el envío.
+
+`backend/tests/test_sid_simulator.py` cubre por HTTP el recorrido que usa la
+interfaz: un fallo SERVICIO_NO_DISPONIBLE seguido de un reintento ENVIADO deja
+intactos el resultado y el estado de la sesión; una sesión rechazada recibe
+PROCEDURE_NOT_ENABLED sin ruta ni huella del documento. El 2026-10-05 se
+reprodujo contra la API local una sesión sintética con TIEMPO_AGOTADO y
+reintento ENVIADO.
+
+Recorrido manual pendiente de registrar por el equipo: con cámara, completar
+una verificación aprobada, registrar el documento, enviar un escenario de fallo,
+reintentar y comprobar que una verificación rechazada no muestra la sección.
+
 ## Integración continua (#23)
 
 `.github/workflows/ci.yml` se ejecuta en cada pull request, en cada push a main

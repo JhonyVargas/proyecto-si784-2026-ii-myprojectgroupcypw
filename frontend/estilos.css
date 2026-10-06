@@ -642,6 +642,76 @@ body {
   color: var(--n-200);
 }
 
+/* ═════════════════ Trámite simulado ═════════════════ */
+
+.tramite {
+  margin: 0 0 22px;
+  padding: 20px 20px 4px;
+  border-radius: var(--r-md);
+  border: 1px solid rgba(255, 255, 255, .07);
+  background: rgba(7, 11, 16, .4);
+  text-align: left;
+}
+.tramite__titulo { margin: 0 0 6px; font-size: 15px; font-weight: 600; color: var(--n-050); }
+.tramite__aviso { margin: 0 0 18px; }
+
+.campo--texto textarea,
+.campo--texto select {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--n-700);
+  background: rgba(7, 11, 16, .6);
+  color: var(--n-050);
+  font: 400 14px/1.5 "Inter", system-ui, sans-serif;
+  transition: border-color .22s, box-shadow .22s;
+}
+.campo--texto textarea { resize: vertical; min-height: 76px; }
+.campo--texto select option { background: #0b1118; }
+.campo--texto textarea:focus,
+.campo--texto select:focus {
+  outline: none;
+  border-color: var(--zafiro-500);
+  box-shadow: 0 0 0 4px rgba(52, 128, 230, .13);
+}
+
+.tramite__estado {
+  display: grid; gap: 4px;
+  margin: 18px 0 14px;
+  padding: 12px 15px;
+  border-radius: var(--r-md);
+  border: 1px solid rgba(232, 151, 63, .32);
+  background: var(--ambar-tenue);
+  font-size: 13.5px; line-height: 1.5;
+  color: var(--n-200);
+  animation: entrar .3s var(--paso);
+}
+.tramite__estado strong { color: var(--ambar); }
+.tramite__estado[data-tono="ok"] { border-color: rgba(62, 207, 150, .32); background: rgba(62, 207, 150, .1); }
+.tramite__estado[data-tono="ok"] strong { color: var(--esmeralda-claro); }
+.tramite__estado[data-tono="mal"] { border-color: rgba(240, 96, 92, .32); background: var(--rojo-tenue); }
+.tramite__estado[data-tono="mal"] strong { color: var(--rojo); }
+
+.tramite__evidencia {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 7px 18px;
+  margin: 0 0 16px;
+  padding: 14px 16px;
+  border-radius: var(--r-md);
+  background: rgba(7, 11, 16, .55);
+  border: 1px solid rgba(255, 255, 255, .06);
+  font-size: 12.5px;
+}
+.tramite__evidencia dt { color: var(--n-400); }
+.tramite__evidencia dd {
+  margin: 0;
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 12px;
+  word-break: break-all;
+  color: var(--n-200);
+}
+
 /* ═════════════════ Alertas ═════════════════ */
 
 .alerta {
