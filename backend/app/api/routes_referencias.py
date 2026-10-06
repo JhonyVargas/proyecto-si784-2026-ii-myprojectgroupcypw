@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.api.auth import CurrentUser, require_roles
 from app.core.database import get_db
+from app.core.seguridad import leer_imagen
 from app.models import schemas
 from app.models.db_models import Usuario
 from app.models.enums import RolUsuario
@@ -21,7 +22,7 @@ def solicitar_cambio(
     usuario: Usuario = Depends(require_roles(RolUsuario.OPERADOR, RolUsuario.ADMINISTRADOR)),
     db: Session = Depends(get_db),
 ):
-    return IdentidadService(db).solicitar_cambio_referencia(id_identidad, usuario.id, motivo, imagen_referencia.file.read())
+    return IdentidadService(db).solicitar_cambio_referencia(id_identidad, usuario.id, motivo, leer_imagen(imagen_referencia))
 
 
 @router.get("/referencia/solicitudes", response_model=list[schemas.SolicitudCambioReferenciaRespuesta])

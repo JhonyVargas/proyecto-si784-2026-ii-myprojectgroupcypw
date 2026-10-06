@@ -10,7 +10,9 @@
  * (padrón de identidades, credenciales y bitácora).
  * ═══════════════════════════════════════════════════════════════════ */
 
-const API = "http://127.0.0.1:8000";
+/* En staging con HTTPS, definir window.NOTARYVERIFY_API antes de cargar este
+ * script (ver documentacion/base/04-calidad-operacion/seguridad.md). */
+const API = window.NOTARYVERIFY_API || "http://127.0.0.1:8000";
 const auth = { token: sessionStorage.getItem("notaryverify_token"), usuario: null };
 const MENSAJES_CODIGO = {
   AUTHENTICATION_REQUIRED: "La sesión de operador no es válida. Inicie sesión nuevamente.",
@@ -25,6 +27,9 @@ const MENSAJES_CODIGO = {
   DOCUMENT_NOT_FOUND: "El documento del trámite no existe. Regístrelo nuevamente.",
   SESSION_NOT_FOUND: "La sesión de verificación no existe. Inicie una nueva verificación.",
   INPUT_INVALID: "Los datos enviados no son válidos.",
+  UPLOAD_TYPE_NOT_ALLOWED: "Solo se aceptan imágenes JPEG o PNG.",
+  UPLOAD_TOO_LARGE: "El archivo supera el tamaño máximo permitido.",
+  UPLOAD_EMPTY: "El archivo está vacío.",
 };
 
 const $ = (sel) => document.querySelector(sel);
@@ -622,8 +627,11 @@ $("#boton-documento").addEventListener("click", async () => {
   }
   ocupado("#boton-documento", true);
   try {
-    const parametros = new URLSearchParams({ id_sesion: sesion.id, contenido });
-    const documento = await pedir(`/documentos?${parametros}`, { method: "POST" });
+    // El contenido va en el cuerpo para no quedar en la URL ni en logs de acceso.
+    const cuerpo = new FormData();
+    cuerpo.append("contenido", contenido);
+    const parametros = new URLSearchParams({ id_sesion: sesion.id });
+    const documento = await pedir(`/documentos?${parametros}`, { method: "POST", body: cuerpo });
     tramite.idDocumento = documento.id;
     tramite.hash = documento.hash_sha256;
     mostrarExito("#tramite-integridad",

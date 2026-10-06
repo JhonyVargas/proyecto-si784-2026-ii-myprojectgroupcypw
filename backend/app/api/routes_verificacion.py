@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, File, Query, UploadFile
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
+from app.core.seguridad import leer_imagen
 from app.api.auth import CurrentUser, require_roles
 from app.models.db_models import Usuario
 from app.models.enums import RolUsuario
@@ -63,7 +64,7 @@ def capturar_rostro(
     usuario: Usuario = Depends(require_roles(RolUsuario.OPERADOR, RolUsuario.ADMINISTRADOR)),
     db: Session = Depends(get_db)
 ):
-    return VerificacionService(db).registrar_captura_facial(id_sesion, imagen.file.read())
+    return VerificacionService(db).registrar_captura_facial(id_sesion, leer_imagen(imagen))
 
 
 @router.post("/{id_sesion}/prueba-vida/desafio", response_model=schemas.DesafioPruebaVidaRespuesta)
@@ -83,4 +84,4 @@ def ejecutar_prueba_vida(
     usuario: Usuario = Depends(require_roles(RolUsuario.OPERADOR, RolUsuario.ADMINISTRADOR)),
     db: Session = Depends(get_db),
 ):
-    return VerificacionService(db).registrar_prueba_vida(id_sesion, imagen.file.read())
+    return VerificacionService(db).registrar_prueba_vida(id_sesion, leer_imagen(imagen))

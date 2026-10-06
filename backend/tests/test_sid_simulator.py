@@ -123,7 +123,8 @@ def test_flujo_ui_fallo_externo_no_altera_sesion_y_permite_reintento(db_session,
         with TestClient(app) as client:
             headers = _cliente_operador(client, db_session)
             documento = client.post(
-                "/documentos", params={"id_sesion": sesion.id, "contenido": "Minuta ficticia"}
+                "/documentos", headers=headers,
+                params={"id_sesion": sesion.id}, data={"contenido": "Minuta ficticia"},
             ).json()
             fallido = client.post("/tramites", headers=headers, params={
                 "id_sesion": sesion.id, "id_documento": documento["id"],

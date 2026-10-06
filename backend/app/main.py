@@ -20,6 +20,7 @@ from app.api import (
     routes_verificacion,
 )
 from app.core.database import init_db
+from app.core.seguridad import CargaInvalidaError, resolver_origenes_cors
 from app.services.errors import (
     ConsentimientoRequeridoError, CredencialNoRegistradaError, DocumentoIntegridadInvalidaError,
     DocumentoNoEncontradoError, EvidenciaTramiteNoEncontradaError,
@@ -49,11 +50,12 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Orígenes explícitos por entorno (#22); "*" se rechaza al iniciar.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=resolver_origenes_cors(),
+    allow_methods=["GET", "POST", "PATCH", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 app.include_router(routes_identidades.router)
@@ -92,6 +94,11 @@ ERROR_CONTRACTS = {
 async def handle_domain_error(_: Request, exc: NotaryVerifyError):
     status_code, code = ERROR_CONTRACTS.get(type(exc), (400, "DOMAIN_ERROR"))
     return JSONResponse(status_code=status_code, content={"detail": {"code": code, "message": str(exc)}})
+
+
+@app.exception_handler(CargaInvalidaError)
+async def handle_upload_error(_: Request, exc: CargaInvalidaError):
+    return JSONResponse(status_code=exc.status_code, content={"detail": {"code": exc.code, "message": str(exc)}})
 
 
 @app.exception_handler(ValueError)
