@@ -9,6 +9,7 @@
 | Especificación | artefactos válidos | openspec validate cambio --strict |
 | Documentación | enlaces locales existentes | python .github/scripts/check_markdown_links.py |
 | Integración continua | gates en cada PR y push a main | .github/workflows/ci.yml |
+| Rendimiento | promedio frente a umbral RNF-02/RNF-04 | python -m benchmarks.medir_rendimiento ([protocolo](rendimiento.md)) |
 
 ## Evidencia inicial
 
