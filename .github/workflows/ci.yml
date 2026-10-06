@@ -97,3 +97,24 @@ jobs:
             exit 1
           fi
           echo "Sin datos runtime, entornos virtuales ni .env versionados."
+
+  docker-health:
+    name: Imagen Docker y healthcheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: docker compose up --build -d --wait backend
+        run: docker compose up --build -d --wait --wait-timeout 180 backend
+
+      - name: curl /salud
+        run: curl --fail --silent --show-error http://127.0.0.1:8000/salud
+
+      - name: Logs del backend
+        if: always()
+        run: docker compose logs backend
+
+      - name: docker compose down -v
+        if: always()
+        run: docker compose down -v

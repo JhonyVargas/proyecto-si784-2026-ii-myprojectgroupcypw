@@ -116,6 +116,7 @@ nunca imagen, ruta ni contenido biométrico.
 - /documentos: hash y verificación de documentos de prueba. `POST /documentos?id_sesion=` exige Operador o Administrador, una sesión existente y `contenido` como campo de formulario (máximo 20 000 caracteres), no en la URL.
 - /auditoria: eventos y validación de cadena.
 - /tramites: simulación condicionada a sesión aprobada.
+- /salud: healthcheck público; 200 `ok` o `degradado` (faltan modelos locales) y 503 `no_disponible` si la base no responde. No expone datos.
 
 ## Trámite simulado y evidencia recuperable
 

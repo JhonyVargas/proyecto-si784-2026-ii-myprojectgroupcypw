@@ -220,15 +220,22 @@ async function restaurarSesion() {
   catch { auth.token = null; sessionStorage.removeItem("notaryverify_token"); actualizarSesion(null); }
 }
 
+/* Healthcheck (#25): "degradado" significa que la API responde pero faltan
+ * modelos biométricos locales, que se descargarán en la primera captura. */
 async function comprobarApi() {
   const caja = $("#conexion");
   try {
-    const estado = await pedir("/");
-    caja.className = "conexion conexion--ok";
-    $("#texto-api").textContent = estado.estado === "operativo" ? "API conectada" : estado.estado;
+    const salud = await pedir("/salud");
+    const degradada = salud.estado === "degradado";
+    caja.className = `conexion ${degradada ? "conexion--aviso" : "conexion--ok"}`;
+    $("#texto-api").textContent = degradada ? "API conectada · modelos pendientes" : "API conectada";
+    caja.title = degradada
+      ? "Los modelos biométricos se descargarán en la primera captura; requiere conexión a internet."
+      : "";
   } catch {
     caja.className = "conexion conexion--mal";
     $("#texto-api").textContent = "API no disponible";
+    caja.title = "No se pudo contactar con la API. Verifique que el backend esté en ejecución.";
   }
 }
 

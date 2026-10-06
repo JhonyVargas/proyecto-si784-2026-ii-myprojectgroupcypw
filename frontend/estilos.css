@@ -170,6 +170,8 @@ body {
 }
 .conexion--ok { color: var(--zafiro-300); }
 .conexion--ok .conexion__punto { background: var(--zafiro-400); box-shadow: 0 0 0 3px rgba(90, 160, 245, .16); }
+.conexion--aviso { color: var(--ambar); }
+.conexion--aviso .conexion__punto { background: var(--ambar); box-shadow: 0 0 0 3px var(--ambar-tenue); }
 .conexion--mal { color: var(--rojo); }
 .conexion--mal .conexion__punto { background: var(--rojo); box-shadow: 0 0 0 3px var(--rojo-tenue); }
 
