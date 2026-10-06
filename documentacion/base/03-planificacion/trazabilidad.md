@@ -33,12 +33,12 @@ Los números de issue son reales y se consultan en `https://github.com/UPT-FAING
 | --- | --- | --- | --- |
 | RNF-01 cuatro pasos/usabilidad | #9, #10 | recorrido UI y `test_mvp_scenarios` | Verificado M1 |
 | RNF-02 comparación < 3 s | #18, #24 | `benchmarks/medir_rendimiento.py`, `test_rendimiento`, [rendimiento](../04-calidad-operacion/rendimiento.md) | Benchmark técnico 0,021 s promedio (#24); medición con cámara pendiente |
-| RNF-03 disponibilidad 95 % | #23, #25 | healthcheck y reporte de uptime | Pendiente |
+| RNF-03 disponibilidad 95 % | #23, #25 | `GET /salud`, healthcheck Compose, `monitor_disponibilidad`, `test_disponibilidad` | Healthcheck y registro verificados (#25); periodo de evaluación pendiente |
 | RNF-04 flujo < 45 s | #10, #14, #24 | timeout de 20 s; 20 sesiones HTTP medidas en `rendimiento.md` | Costo del sistema 0,10 s promedio (#24); medición con tiempo humano pendiente |
 | RNF-05 FPR combinado < 5 % | #18, #26, #27 | protocolo y métricas agregadas | #14 no afirma FPR; evaluación pendiente |
 | RNF-06 autenticación y acceso | #4, #5, #22 | `test_auth`, `test_authorization`, `test_security_hardening` | Verificado M1; CORS, cargas y documentos endurecidos (#22) |
 | RNF-07 HTTPS/TLS | #22 | guía de staging en `seguridad.md` | Guía documentada; despliegue HTTPS no ejecutado |
-| RNF-08 navegadores vigentes | #9, #25 | matriz Chrome/Edge/Firefox | Pendiente |
+| RNF-08 navegadores vigentes | #9, #25 | `frontend/e2e/recorrido_navegadores.py`, [matriz](../04-calidad-operacion/compatibilidad-disponibilidad.md) | Chrome 154, Edge 154 y Firefox 155: 9/9 escenarios (#25); aprobación con rostro real en #29 |
 | RNF-09 mantenibilidad | #6, #21, #23 | capas, documentación, `.github/workflows/ci.yml`, `test_persistence_config` | CI en cada PR (#23); persistencia configurable y reinicio verificado (#21) |
 | RNF-10 recuperación de auditoría | #16, #17 | reconstrucción de evidencia, alteración controlada | Verificado M4 |
 

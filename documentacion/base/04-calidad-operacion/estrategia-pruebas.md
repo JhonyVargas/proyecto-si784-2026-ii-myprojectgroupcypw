@@ -9,6 +9,8 @@
 | Especificación | artefactos válidos | openspec validate cambio --strict |
 | Documentación | enlaces locales existentes | python .github/scripts/check_markdown_links.py |
 | Integración continua | gates en cada PR y push a main | .github/workflows/ci.yml |
+| Navegadores | Chrome, Edge y Firefox con cámara simulada | python frontend/e2e/recorrido_navegadores.py ([matriz](compatibilidad-disponibilidad.md)) |
+| Disponibilidad | /salud y porcentaje frente a 95 % | python -m benchmarks.monitor_disponibilidad |
 | Rendimiento | promedio frente a umbral RNF-02/RNF-04 | python -m benchmarks.medir_rendimiento ([protocolo](rendimiento.md)) |
 
 ## Evidencia inicial
@@ -134,6 +136,7 @@ fallo indica qué reproducir localmente. Gates obligatorios:
 | Pruebas backend (pytest) | `cd backend; python -m pytest -q` con Python 3.11 | artefacto `pytest-report` (JUnit), publicado también si falla |
 | OpenSpec y enlaces Markdown | `openspec validate --all --strict` y `python .github/scripts/check_markdown_links.py` | salida del paso con archivo:línea del enlace roto |
 | Compose y datos runtime | `docker compose config --quiet` y control de `git ls-files` | lista de archivos runtime versionados, si existen |
+| Imagen Docker y healthcheck (#25) | `docker compose up --build -d --wait backend` y `curl /salud` | logs del contenedor, publicados también si falla |
 
 Equivalente local desde la raíz del repositorio:
 

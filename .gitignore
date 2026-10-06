@@ -25,3 +25,5 @@ Thumbs.db
 backend/pytest-report.xml
 backend/benchmarks/*.json
 backend/reporte*.json
+frontend/e2e/*.json
+backend/disponibilidad*.csv

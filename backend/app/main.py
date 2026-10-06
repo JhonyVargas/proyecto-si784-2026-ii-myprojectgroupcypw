@@ -19,7 +19,8 @@ from app.api import (
     routes_tramites,
     routes_verificacion,
 )
-from app.core.database import init_db
+from app.core.database import engine, init_db
+from app.core.observabilidad import configurar_logs, estado_salud, registrar_acceso
 from app.core.seguridad import CargaInvalidaError, resolver_origenes_cors
 from app.services.errors import (
     ConsentimientoRequeridoError, CredencialNoRegistradaError, DocumentoIntegridadInvalidaError,
@@ -34,6 +35,7 @@ from app.services.errors import (
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    configurar_logs()
     init_db()
     yield
 
@@ -57,6 +59,8 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PATCH", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type"],
 )
+
+app.middleware("http")(registrar_acceso)
 
 app.include_router(routes_identidades.router)
 app.include_router(routes_referencias.router)
@@ -113,3 +117,10 @@ def estado():
         "estado": "operativo",
         "aviso": "Prototipo académico sin valor de identificación legal.",
     }
+
+
+@app.get("/salud", tags=["Estado"])
+def salud():
+    """Healthcheck (#25): 200 ok/degradado si la base responde, 503 si no."""
+    codigo, cuerpo = estado_salud(engine)
+    return JSONResponse(status_code=codigo, content={**cuerpo, "version": app.version})
