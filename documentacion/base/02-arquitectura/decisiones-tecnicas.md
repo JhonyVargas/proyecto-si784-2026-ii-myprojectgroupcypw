@@ -9,9 +9,10 @@
 | Docker Compose local | Reproduce entorno | Plataforma cloud |
 | RFID simulado con UID hexadecimal | No hay hardware disponible; permite probar contrato de lectura sin inventar integración física | Lector RFID físico sin evidencia de disponibilidad |
 | Umbral facial local 0.35 y calidad mínima | Hace reproducible el resultado técnico de LBPH sin afirmar precisión biométrica; exige 120 × 120 px, un rostro y nitidez mínima | Elegir el rostro más grande o aceptar capturas ambiguas |
+| Persistencia configurable por entorno y reinicio verificado (#21) | `NOTARYVERIFY_DATA_DIR` y `NOTARYVERIFY_DATABASE_URL` con valores por defecto idénticos al prototipo; al iniciar se crean tablas aditivas y se rechaza un esquema con columnas faltantes, con respaldo y reinicio reproducible | Alembic: añade dependencia y migraciones para datos solo sintéticos; motor de base de datos servidor |
 | Desafío de vida en servidor | Evita que el cliente elija la acción; registra emisión, vencimiento y una repetición sin conservar vídeo | Confiar en un sorteo JavaScript o almacenar capturas biométricas |
 
-Pendiente: configuración DATABASE_URL, CORS restrictivo y migraciones formales se tratarán en una propuesta posterior porque afectan compatibilidad.
+CORS por entorno, validación de cargas y la guía HTTPS se decidieron en #22 (ver `../04-calidad-operacion/seguridad.md`). La configuración de persistencia y la estrategia de cambios de esquema quedaron decididas en #21 (ver `modelo-de-datos.md`, sección "Configuración y cambios de esquema").
 
 La decisión RFID vigente es: no se dispone de lector físico en esta etapa. El
 adaptador local acepta UID hexadecimales en mayúsculas y sin separadores (por

@@ -19,7 +19,9 @@ from app.api import (
     routes_tramites,
     routes_verificacion,
 )
-from app.core.database import init_db
+from app.core.database import engine, init_db
+from app.core.observabilidad import configurar_logs, estado_salud, registrar_acceso
+from app.core.seguridad import CargaInvalidaError, resolver_origenes_cors
 from app.services.errors import (
     ConsentimientoRequeridoError, CredencialNoRegistradaError, DocumentoIntegridadInvalidaError,
     DocumentoNoEncontradoError, EvidenciaTramiteNoEncontradaError,
@@ -33,6 +35,7 @@ from app.services.errors import (
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    configurar_logs()
     init_db()
     yield
 
@@ -49,12 +52,15 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Orígenes explícitos por entorno (#22); "*" se rechaza al iniciar.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=resolver_origenes_cors(),
+    allow_methods=["GET", "POST", "PATCH", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
 )
+
+app.middleware("http")(registrar_acceso)
 
 app.include_router(routes_identidades.router)
 app.include_router(routes_referencias.router)
@@ -94,6 +100,11 @@ async def handle_domain_error(_: Request, exc: NotaryVerifyError):
     return JSONResponse(status_code=status_code, content={"detail": {"code": code, "message": str(exc)}})
 
 
+@app.exception_handler(CargaInvalidaError)
+async def handle_upload_error(_: Request, exc: CargaInvalidaError):
+    return JSONResponse(status_code=exc.status_code, content={"detail": {"code": exc.code, "message": str(exc)}})
+
+
 @app.exception_handler(ValueError)
 async def handle_validation_error(_: Request, exc: ValueError):
     return JSONResponse(status_code=422, content={"detail": {"code": "INPUT_INVALID", "message": str(exc)}})
@@ -106,3 +117,10 @@ def estado():
         "estado": "operativo",
         "aviso": "Prototipo académico sin valor de identificación legal.",
     }
+
+
+@app.get("/salud", tags=["Estado"])
+def salud():
+    """Healthcheck (#25): 200 ok/degradado si la base responde, 503 si no."""
+    codigo, cuerpo = estado_salud(engine)
+    return JSONResponse(status_code=codigo, content={**cuerpo, "version": app.version})

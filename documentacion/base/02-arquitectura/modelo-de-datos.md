@@ -1,6 +1,6 @@
 # Modelo de datos
 
-La base actual es SQLite local en backend/data/notaryverify.db y se crea con Base.metadata.create_all al iniciar.
+La base es SQLite local; por defecto `backend/data/notaryverify.db`. Su ubicación se configura por entorno y el esquema se verifica al iniciar (ver "Configuración y cambios de esquema").
 
 | Grupo | Tablas / finalidad |
 | --- | --- |
@@ -61,3 +61,38 @@ base local ya existente, se debe respaldar `backend/data/notaryverify.db` o
 reiniciarla si contiene exclusivamente datos sintéticos; no hay todavía una
 migración formal. Las pruebas usan SQLite en memoria y cubren la asociación,
 el rechazo de sesión no aprobada y el bloqueo por documento alterado.
+
+## Configuración y cambios de esquema (#21)
+
+| Variable | Valor por defecto | Uso |
+| --- | --- | --- |
+| `NOTARYVERIFY_DATA_DIR` | `backend/data` (`/app/data` en Docker) | base, documentos, referencias y modelos runtime |
+| `NOTARYVERIFY_DATABASE_URL` | `sqlite:///<DATA_DIR>/notaryverify.db` | URL SQLAlchemy; solo se admite `sqlite:///` |
+
+Una variable vacía equivale a no definirla. Una URL que no sea SQLite detiene el
+arranque con un mensaje explícito: migrar a un motor servidor queda fuera de
+alcance del prototipo.
+
+Compatibilidad: los valores por defecto son las mismas rutas del prototipo, por
+lo que las bases y volúmenes existentes siguen funcionando sin acción. No se
+modifica ningún modelo ni tabla.
+
+Decisión de migración: no se adopta un gestor de migraciones formal porque la
+base contiene solo datos sintéticos de desarrollo. Al iniciar, `init_db`:
+
+1. crea las tablas nuevas que falten (cambio aditivo, como hasta ahora);
+2. compara cada tabla existente con los modelos y, si falta alguna columna,
+   detiene el arranque con `EsquemaIncompatibleError`, que lista
+   `tabla.columna` e indica el procedimiento de reinicio.
+
+Procedimiento de reinicio reproducible, desde `backend` y con el servidor
+detenido:
+
+```
+python -m app.core.reset_db
+```
+
+El comando copia la base actual a `<DATA_DIR>/respaldo/notaryverify-<fecha>.db`
+y crea una base vacía con el esquema vigente. No aplica a URL en memoria. Todo
+cambio futuro que modifique una tabla existente debe documentar aquí su impacto
+y, si no es aditivo, requerir este reinicio o proponer migraciones formales.

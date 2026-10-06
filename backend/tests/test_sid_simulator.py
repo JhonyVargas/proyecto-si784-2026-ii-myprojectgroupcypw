@@ -101,3 +101,66 @@ def test_evidencia_requiere_auditor_o_administrador(db_session, tmp_path, monkey
     assert response.status_code == 200
     assert response.json()["id_documento"] == documento.id
     assert "hash" not in response.text.lower()
+
+
+def _cliente_operador(client, db_session):
+    AuthService(db_session).create_user("Operador UI", "operador.ui@example.test", "clave", RolUsuario.OPERADOR)
+    token = client.post(
+        "/auth/login", json={"correo": "operador.ui@example.test", "password": "clave"}
+    ).json()["access_token"]
+    return {"Authorization": f"Bearer {token}"}
+
+
+def test_flujo_ui_fallo_externo_no_altera_sesion_y_permite_reintento(db_session, tmp_path, monkeypatch):
+    """Recorrido HTTP que usa la estación (#20): documento, fallo externo y reintento."""
+    monkeypatch.setattr(documento_service_module, "DOCUMENTOS_DIR", tmp_path)
+    sesion = SesionVerificacion(resultado=R.IDENTIDAD_VERIFICADA)
+    db_session.add(sesion)
+    db_session.commit()
+    estado_inicial = sesion.estado
+    app.dependency_overrides[get_db] = lambda: db_session
+    try:
+        with TestClient(app) as client:
+            headers = _cliente_operador(client, db_session)
+            documento = client.post(
+                "/documentos", headers=headers,
+                params={"id_sesion": sesion.id}, data={"contenido": "Minuta ficticia"},
+            ).json()
+            fallido = client.post("/tramites", headers=headers, params={
+                "id_sesion": sesion.id, "id_documento": documento["id"],
+                "escenario": "SERVICIO_NO_DISPONIBLE",
+            })
+            reintento = client.post("/tramites", headers=headers, params={
+                "id_sesion": sesion.id, "id_documento": documento["id"], "escenario": "DISPONIBLE",
+            })
+    finally:
+        app.dependency_overrides.clear()
+
+    assert fallido.status_code == 201
+    assert fallido.json()["estado"] == "ERROR_SERVICIO"
+    assert reintento.status_code == 201
+    assert reintento.json()["estado"] == "ENVIADO"
+    assert reintento.json()["id"] != fallido.json()["id"]
+    db_session.refresh(sesion)
+    assert sesion.resultado == R.IDENTIDAD_VERIFICADA
+    assert sesion.estado == estado_inicial
+
+
+def test_flujo_ui_sesion_rechazada_recibe_codigo_sin_detalle_interno(db_session, tmp_path, monkeypatch):
+    sesion, documento = _sesion_y_documento(
+        db_session, tmp_path, monkeypatch, R.ROSTRO_NO_COINCIDENTE
+    )
+    app.dependency_overrides[get_db] = lambda: db_session
+    try:
+        with TestClient(app) as client:
+            headers = _cliente_operador(client, db_session)
+            response = client.post("/tramites", headers=headers, params={
+                "id_sesion": sesion.id, "id_documento": documento.id,
+            })
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 409
+    assert response.json()["detail"]["code"] == "PROCEDURE_NOT_ENABLED"
+    assert documento.contenido_path not in response.text
+    assert documento.hash_sha256 not in response.text

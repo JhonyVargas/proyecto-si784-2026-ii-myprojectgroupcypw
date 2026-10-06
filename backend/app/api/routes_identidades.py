@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, File, Form, UploadFile
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
+from app.core.seguridad import leer_imagen
 from app.api.auth import require_roles
 from app.models.enums import RolUsuario
 from app.models import schemas
@@ -39,7 +40,7 @@ def registrar_identidad(
         id_participante=id_participante,
         confirmo_dato_ficticio=confirmo_dato_ficticio,
     )
-    imagen_bytes = imagen_referencia.file.read()
+    imagen_bytes = leer_imagen(imagen_referencia)
     return IdentidadService(db).registrar(datos, imagen_bytes)
 
 

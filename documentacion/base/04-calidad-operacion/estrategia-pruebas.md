@@ -7,6 +7,11 @@
 | Frontend | estación, administración, credencial y auditoría | lista de humo manual |
 | Contenedores | configuración y endpoints | docker compose config y docker compose up |
 | Especificación | artefactos válidos | openspec validate cambio --strict |
+| Documentación | enlaces locales existentes | python .github/scripts/check_markdown_links.py |
+| Integración continua | gates en cada PR y push a main | .github/workflows/ci.yml |
+| Navegadores | Chrome, Edge y Firefox con cámara simulada | python frontend/e2e/recorrido_navegadores.py ([matriz](compatibilidad-disponibilidad.md)) |
+| Disponibilidad | /salud y porcentaje frente a 95 % | python -m benchmarks.monitor_disponibilidad |
+| Rendimiento | promedio frente a umbral RNF-02/RNF-04 | python -m benchmarks.medir_rendimiento ([protocolo](rendimiento.md)) |
 
 ## Evidencia inicial
 
@@ -76,3 +81,77 @@ interno de una prueba. `test_authorization.py` verifica además que Operador no
 puede consultar la bitácora ni reconstruir una sesión, mientras Administrador
 sí. Esta evidencia no declara la cadena como blockchain ni permite editar o
 borrar eventos históricos.
+
+## Trámite simulado en la interfaz M5 (#20)
+
+La pantalla de resultado muestra la sección "Trámite simulado SID-Sunarp" solo
+cuando la sesión termina en IDENTIDAD_VERIFICADA. El operador registra un
+documento ficticio, elige un escenario del simulador y envía el trámite. El
+estado del trámite se presenta aparte del veredicto, con evidencia mínima
+(trámite, documento, huella SHA-256, fecha) y la indicación de que la
+verificación no cambia. Los fallos externos ofrecen reintentar el envío.
+
+`backend/tests/test_sid_simulator.py` cubre por HTTP el recorrido que usa la
+interfaz: un fallo SERVICIO_NO_DISPONIBLE seguido de un reintento ENVIADO deja
+intactos el resultado y el estado de la sesión; una sesión rechazada recibe
+PROCEDURE_NOT_ENABLED sin ruta ni huella del documento. El 2026-10-05 se
+reprodujo contra la API local una sesión sintética con TIEMPO_AGOTADO y
+reintento ENVIADO.
+
+Recorrido manual pendiente de registrar por el equipo: con cámara, completar
+una verificación aprobada, registrar el documento, enviar un escenario de fallo,
+reintentar y comprobar que una verificación rechazada no muestra la sección.
+
+## Persistencia configurable M6 (#21)
+
+`backend/tests/test_persistence_config.py` verifica sin red ni datos reales: la
+configuración por defecto conserva las rutas del prototipo; las variables vacías
+equivalen a no definirlas; la configuración explícita y la derivada de
+`NOTARYVERIFY_DATA_DIR`; el rechazo de URL que no son SQLite; la creación de una
+tabla aditiva sin tocar datos; la detención con instrucciones ante una columna
+faltante; y el reinicio con respaldo. Dos pruebas arrancan la base en un proceso
+aparte: una con carpeta explícita y otra con URL inválida. El 2026-10-05 la base
+local existente del equipo resultó compatible con la verificación de esquema.
+
+## Privacidad, CORS y cargas M6 (#22)
+
+`backend/tests/test_security_hardening.py` verifica la configuración de
+orígenes y límite de carga; que la API responda CORS a la estación local y no a
+un origen ajeno; que cargas GIF, con contenido que no coincide con su tipo,
+vacías o mayores al límite se rechacen sin crear identidad ni archivo; que una
+carga sin credenciales devuelva 401; y que crear un documento exija rol, sesión
+existente y contenido en el cuerpo. Incluye una revisión estática de logs y de
+secretos versionados. `test_documento_integridad.py` añade que la ruta del
+archivo no depende del cliente y que dos documentos de una sesión no se
+sobrescriben. El despliegue HTTPS de staging está documentado, no ejecutado.
+
+## Integración continua (#23)
+
+`.github/workflows/ci.yml` se ejecuta en cada pull request, en cada push a main
+y manualmente. Cada paso se nombra con el comando que ejecuta, de modo que un
+fallo indica qué reproducir localmente. Gates obligatorios:
+
+| Job | Comando | Evidencia |
+| --- | --- | --- |
+| Pruebas backend (pytest) | `cd backend; python -m pytest -q` con Python 3.11 | artefacto `pytest-report` (JUnit), publicado también si falla |
+| OpenSpec y enlaces Markdown | `openspec validate --all --strict` y `python .github/scripts/check_markdown_links.py` | salida del paso con archivo:línea del enlace roto |
+| Compose y datos runtime | `docker compose config --quiet` y control de `git ls-files` | lista de archivos runtime versionados, si existen |
+| Imagen Docker y healthcheck (#25) | `docker compose up --build -d --wait backend` y `curl /salud` | logs del contenedor, publicados también si falla |
+
+Equivalente local desde la raíz del repositorio:
+
+```
+cd backend; python -m pytest -q; cd ..
+openspec validate --all --strict
+python .github/scripts/check_markdown_links.py
+docker compose config --quiet
+```
+
+Límites: CI no descarga modelos, no usa cámara, navegador ni biometría real; las
+pruebas biométricas usan patrones sintéticos y adaptadores simulados. La fuente
+histórica con Git propio no se descarga y sus enlaces no se comprueban. Las
+mediciones de rendimiento (#24), compatibilidad de navegador (#25) y evaluación
+experimental (#26, #27) no son gates obligatorios.
+
+El 2026-10-05 la ejecución local equivalente aprobó 76 pruebas, 18 elementos
+OpenSpec, 115 archivos Markdown sin enlaces rotos y la configuración Compose.

@@ -109,7 +109,7 @@
           <p class="pie" id="motivo-camara-rostro"></p>
           <label class="boton boton--sutil">
             Subir una fotografía
-            <input type="file" accept="image/*" id="archivo-rostro" hidden />
+            <input type="file" accept="image/jpeg,image/png" id="archivo-rostro" hidden />
           </label>
         </div>
       </div>
@@ -217,6 +217,53 @@
         <summary>Detalle de la sesión</summary>
         <dl id="detalle-lista"></dl>
       </details>
+
+      <!-- Trámite simulado: solo se habilita con identidad verificada (RN-06)
+           y con un documento de integridad vigente (RN-08). -->
+      <section class="tramite" id="tramite" hidden aria-labelledby="tramite-titulo">
+        <h2 class="tramite__titulo" id="tramite-titulo">Trámite simulado SID-Sunarp</h2>
+        <p class="pie tramite__aviso">
+          Simulador académico: no se conecta con SID-Sunarp ni con ningún servicio
+          institucional real. El estado del trámite es independiente del resultado
+          de la verificación y no lo modifica.
+        </p>
+
+        <div id="tramite-documento">
+          <label class="campo campo--texto">
+            <span class="campo__nombre">Documento ficticio del trámite</span>
+            <textarea id="tramite-contenido" rows="3" maxlength="2000"
+                      spellcheck="false">Minuta ficticia de prueba académica.</textarea>
+          </label>
+          <button class="boton boton--fantasma boton--ancho" id="boton-documento">
+            <span class="boton__texto">Registrar documento</span>
+          </button>
+        </div>
+
+        <div id="tramite-envio" hidden>
+          <p class="exito" id="tramite-integridad"></p>
+          <label class="campo campo--texto">
+            <span class="campo__nombre">Escenario del simulador</span>
+            <select id="tramite-escenario">
+              <option value="DISPONIBLE">Servicio disponible</option>
+              <option value="RECHAZADO">Trámite rechazado por el servicio</option>
+              <option value="SERVICIO_NO_DISPONIBLE">Servicio no disponible</option>
+              <option value="TIEMPO_AGOTADO">Tiempo de espera agotado</option>
+              <option value="RESPUESTA_INVALIDA">Respuesta inválida</option>
+              <option value="ERROR_INTERNO">Error interno del servicio</option>
+            </select>
+          </label>
+          <button class="boton boton--principal boton--ancho" id="boton-tramite">
+            <span class="boton__texto">Enviar trámite simulado</span>
+          </button>
+        </div>
+
+        <div class="tramite__estado" id="tramite-estado" role="status" hidden>
+          <strong id="tramite-estado-titulo"></strong>
+          <span id="tramite-estado-motivo"></span>
+        </div>
+        <dl class="tramite__evidencia" id="tramite-evidencia" hidden></dl>
+        <p class="alerta" id="error-tramite" hidden></p>
+      </section>
 
       <button class="boton boton--principal boton--ancho" id="boton-nueva">
         <span class="boton__texto">Nueva verificación</span>
@@ -357,7 +404,7 @@
                         </button>
                         <label class="boton boton--fantasma boton--compacto">
                           Subir archivo
-                          <input type="file" accept="image/*" id="adm-archivo" hidden />
+                          <input type="file" accept="image/jpeg,image/png" id="adm-archivo" hidden />
                         </label>
                       </div>
                     </div>

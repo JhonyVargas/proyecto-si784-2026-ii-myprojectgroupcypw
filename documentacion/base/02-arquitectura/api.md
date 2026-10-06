@@ -28,6 +28,12 @@ Los errores de dominio usan `detail.code` estable y un mensaje seguro:
 `PROCEDURE_NOT_ENABLED` (409), `DOCUMENT_NOT_FOUND` (404),
 `DOCUMENT_INTEGRITY_INVALID` (409) y `PROCEDURE_EVIDENCE_NOT_FOUND` (404).
 
+Las cargas se validan antes de llegar a los servicios (#22):
+`UPLOAD_TYPE_NOT_ALLOWED` (415) si la imagen no es JPEG o PNG o su contenido no
+coincide con el tipo, `UPLOAD_TOO_LARGE` (413) si supera
+`NOTARYVERIFY_MAX_UPLOAD_BYTES` y `UPLOAD_EMPTY` (422). Una carga rechazada no
+persiste filas ni archivos.
+
 ## Comparación facial experimental
 
 `POST /verificaciones/{id}/rostro` aplica un preprocesamiento local: decodifica
@@ -107,9 +113,10 @@ nunca imagen, ruta ni contenido biométrico.
 - /identidades y /identidades/consentimientos: datos ficticios y consentimiento.
 - /credenciales: emisión, consulta, QR y revocación.
 - /verificaciones: creación de sesión, rostro y prueba de vida.
-- /documentos: hash y verificación de documentos de prueba.
+- /documentos: hash y verificación de documentos de prueba. `POST /documentos?id_sesion=` exige Operador o Administrador, una sesión existente y `contenido` como campo de formulario (máximo 20 000 caracteres), no en la URL.
 - /auditoria: eventos y validación de cadena.
 - /tramites: simulación condicionada a sesión aprobada.
+- /salud: healthcheck público; 200 `ok` o `degradado` (faltan modelos locales) y 503 `no_disponible` si la base no responde. No expone datos.
 
 ## Trámite simulado y evidencia recuperable
 

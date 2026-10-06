@@ -156,7 +156,7 @@ def test_api_emite_desafio_y_rechaza_captura_estatica(db_session, tmp_path, monk
             id_sesion = inicio.json()["id"]
             rostro = client.post(
                 f"/verificaciones/{id_sesion}/rostro",
-                files={"imagen": ("rostro.jpg", b"captura", "image/jpeg")},
+                files={"imagen": ("rostro.jpg", b"\xff\xd8\xffcaptura", "image/jpeg")},
                 headers=headers,
             )
             assert rostro.status_code == 200
@@ -165,7 +165,7 @@ def test_api_emite_desafio_y_rechaza_captura_estatica(db_session, tmp_path, monk
             assert desafio.json()["accion"] in {"PARPADEO", "GIRO_IZQUIERDA", "GIRO_DERECHA"}
             vida = client.post(
                 f"/verificaciones/{id_sesion}/prueba-vida",
-                files={"imagen": ("vida.jpg", b"captura-estatica", "image/jpeg")},
+                files={"imagen": ("vida.jpg", b"\xff\xd8\xffcaptura-estatica", "image/jpeg")},
                 headers=headers,
             )
             assert (vida.status_code, vida.json()["resultado"]) == (200, R.PRUEBA_DE_VIDA_FALLIDA)

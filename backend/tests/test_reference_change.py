@@ -32,7 +32,7 @@ def test_operator_requests_and_only_admin_approves_reference_change(db_session, 
         with TestClient(app) as client:
             operator = _token(client, "operator@example.test")
             admin = _token(client, "admin@example.test")
-            request = client.post(f"/identidades/{identity.id}/referencia/solicitudes", headers=operator, data={"motivo": "Imagen de referencia renovada"}, files={"imagen_referencia": ("nueva.jpg", b"nueva", "image/jpeg")})
+            request = client.post(f"/identidades/{identity.id}/referencia/solicitudes", headers=operator, data={"motivo": "Imagen de referencia renovada"}, files={"imagen_referencia": ("nueva.jpg", b"\xff\xd8\xffnueva", "image/jpeg")})
             assert request.status_code == 201
             request_id = request.json()["id"]
             assert client.post(f"/identidades/referencia/solicitudes/{request_id}/decision", headers=operator, json={"aprobar": True, "motivo_decision": "no autorizado"}).status_code == 403
@@ -41,7 +41,7 @@ def test_operator_requests_and_only_admin_approves_reference_change(db_session, 
             assert approved.json()["estado"] == "APROBADA"
     finally:
         app.dependency_overrides.clear()
-    assert (tmp_path / "active" / f"{identity.id}.jpg").read_bytes() == b"nueva"
+    assert (tmp_path / "active" / f"{identity.id}.jpg").read_bytes() == b"\xff\xd8\xffnueva"
     details = [event.detalle for event in AuditoriaService(db_session).listar_eventos()]
     assert any("CAMBIO_REFERENCIA_DECIDIDO" in event.tipo_evento for event in AuditoriaService(db_session).listar_eventos())
     assert all("referencia_pendiente_path" not in detail and "nueva.jpg" not in detail for detail in details)

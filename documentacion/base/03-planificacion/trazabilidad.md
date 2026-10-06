@@ -19,8 +19,8 @@ Los números de issue son reales y se consultan en `https://github.com/UPT-FAING
 | RF-10 QR documental | #15 | servicio documental y consulta planificada | Parcial |
 | RF-11 auditoría encadenada | #16, #17 | `auditoria_service`, eventos de asociación, hash chain | Auditoría y reconstrucción autorizada verificadas |
 | RF-12 detectar alteración | #17 | `test_auditoria_hashchain` | Alteración y ruptura verificadas |
-| RF-13 trámite SID simulado | #16, #19, #20 | `sid_sunarp_service`, `test_sid_simulator` | Habilitación y evidencia verificadas; recorrido UI pendiente |
-| RF-14 escenarios de servicio externo | #19, #20 | rutas de trámites, pruebas planificadas | Parcial |
+| RF-13 trámite SID simulado | #16, #19, #20 | `sid_sunarp_service`, `test_sid_simulator`, sección de trámite en `frontend/` | Habilitación, evidencia y recorrido UI verificados (#20) |
+| RF-14 escenarios de servicio externo | #19, #20 | rutas de trámites, seis escenarios en `test_sid_simulator` y selector UI | Escenarios, fallo y reintento verificados (#20) |
 | RF-15 autenticación | #4, #5 | `test_auth`, `test_authorization` | Verificado M1 |
 | RF-16 configurar reglas | #13 | API de reglas, `test_configurable_rules` | Verificado M3 |
 | RF-17 consultar bitácora | #5, #17 | rutas de auditoría, reconstrucción y permisos | Verificado M4 |
@@ -32,14 +32,14 @@ Los números de issue son reales y se consultan en `https://github.com/UPT-FAING
 | Requisito | Issue(s) | Evidencia esperada | Estado base |
 | --- | --- | --- | --- |
 | RNF-01 cuatro pasos/usabilidad | #9, #10 | recorrido UI y `test_mvp_scenarios` | Verificado M1 |
-| RNF-02 comparación < 3 s | #18, #24 | 20 comparaciones sintéticas con guarda < 3 s | Guarda técnica verificada; medición real pendiente |
-| RNF-03 disponibilidad 95 % | #23, #25 | healthcheck y reporte de uptime | Pendiente |
-| RNF-04 flujo < 45 s | #10, #14, #24 | timeout técnico de 20 s; 20 sesiones medidas | Timeout verificado; medición integral pendiente |
+| RNF-02 comparación < 3 s | #18, #24 | `benchmarks/medir_rendimiento.py`, `test_rendimiento`, [rendimiento](../04-calidad-operacion/rendimiento.md) | Benchmark técnico 0,021 s promedio (#24); medición con cámara pendiente |
+| RNF-03 disponibilidad 95 % | #23, #25 | `GET /salud`, healthcheck Compose, `monitor_disponibilidad`, `test_disponibilidad` | Healthcheck y registro verificados (#25); periodo de evaluación pendiente |
+| RNF-04 flujo < 45 s | #10, #14, #24 | timeout de 20 s; 20 sesiones HTTP medidas en `rendimiento.md` | Costo del sistema 0,10 s promedio (#24); medición con tiempo humano pendiente |
 | RNF-05 FPR combinado < 5 % | #18, #26, #27 | protocolo y métricas agregadas | #14 no afirma FPR; evaluación pendiente |
-| RNF-06 autenticación y acceso | #4, #5, #22 | `test_auth`, `test_authorization` | Verificado M1; endurecimiento en #22 |
-| RNF-07 HTTPS/TLS | #22 | configuración de staging y guía | Pendiente |
-| RNF-08 navegadores vigentes | #9, #25 | matriz Chrome/Edge/Firefox | Pendiente |
-| RNF-09 mantenibilidad | #6, #21, #23 | capas, documentación y CI | Parcial |
+| RNF-06 autenticación y acceso | #4, #5, #22 | `test_auth`, `test_authorization`, `test_security_hardening` | Verificado M1; CORS, cargas y documentos endurecidos (#22) |
+| RNF-07 HTTPS/TLS | #22 | guía de staging en `seguridad.md` | Guía documentada; despliegue HTTPS no ejecutado |
+| RNF-08 navegadores vigentes | #9, #25 | `frontend/e2e/recorrido_navegadores.py`, [matriz](../04-calidad-operacion/compatibilidad-disponibilidad.md) | Chrome 154, Edge 154 y Firefox 155: 9/9 escenarios (#25); aprobación con rostro real en #29 |
+| RNF-09 mantenibilidad | #6, #21, #23 | capas, documentación, `.github/workflows/ci.yml`, `test_persistence_config` | CI en cada PR (#23); persistencia configurable y reinicio verificado (#21) |
 | RNF-10 recuperación de auditoría | #16, #17 | reconstrucción de evidencia, alteración controlada | Verificado M4 |
 
 ## Reglas de negocio
@@ -47,11 +47,11 @@ Los números de issue son reales y se consultan en `https://github.com/UPT-FAING
 | Regla | Issue(s) | Evidencia esperada | Estado base |
 | --- | --- | --- | --- |
 | RN-01 ningún factor aprueba solo | #10, #13 | catálogo obligatorio y casos de reglas | Verificado M3 |
-| RN-02 identidad ficticia | #10, #22, #26 | validación y protocolo sin datos reales | Parcial |
+| RN-02 identidad ficticia | #10, #22, #26 | validación, revisión estática de secretos y protocolo sin datos reales | Controles técnicos verificados (#22); protocolo en #26 |
 | RN-03 consentimiento previo | #12, #26 | `test_reference_change`, auditoría | Cambio autorizado verificado; evaluación en #26 |
 | RN-04 credencial revocada | #6, #10 | prueba de rechazo por revocación | Implementado, por verificar E2E |
 | RN-05 intentos fallidos | #8, #10 | `test_temporary_lockout`, auditoría | Verificado M1 |
-| RN-06 trámite condicionado | #16, #19, #20 | bloqueo de sesión rechazada y documento ajeno | Verificado en servicio; recorrido UI pendiente |
+| RN-06 trámite condicionado | #16, #19, #20 | bloqueo de sesión rechazada y documento ajeno; UI oculta el trámite sin identidad verificada | Verificado en servicio y UI (#20) |
 | RN-07 bitácora inmutable | #17 | alteración detectada y acceso restringido | Verificado M4 |
 | RN-08 integridad previa a trámite | #15, #16 | documento modificado bloquea trámite | Verificado |
 | RN-09 cambio biométrico autorizado | #5, #12 | `test_reference_change`, evento de auditoría | Verificado M2 |

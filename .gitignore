@@ -20,3 +20,10 @@ backend/data/modelos/
 # Editores / SO
 .DS_Store
 Thumbs.db
+
+# Reportes de CI generados localmente
+backend/pytest-report.xml
+backend/benchmarks/*.json
+backend/reporte*.json
+frontend/e2e/*.json
+backend/disponibilidad*.csv
